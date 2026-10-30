@@ -106,6 +106,13 @@ test.describe('Accessibilité', () => {
     await expect(app.preset('5 – 5')).toHaveAttribute('aria-pressed', 'true');
   });
 
+  test('l’élément atteint au clavier est entouré d’un contour visible', async ({ app, page }) => {
+    await page.keyboard.press('Tab');
+    await expect(app.go).toBeFocused();
+    await expect(app.go).toHaveCSS('outline-style', 'solid');
+    await expect(app.go).toHaveCSS('outline-width', '3px');
+  });
+
   test('l’ordre de tabulation commence par le bouton principal', async ({ app, page }) => {
     await page.keyboard.press('Tab');
     await expect(app.go).toBeFocused();

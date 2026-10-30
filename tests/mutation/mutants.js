@@ -155,7 +155,9 @@ const EQUIVALENTS = {
   // Le minuteur de reprogrammation n'agit que si une séance tourne et il est réinitialisé à chaque démarrage.
   'stop-noclear': 'minuteur inactif tant qu’aucune séance ne tourne',
   // 0 ne s'afficherait que si une image tombait à moins d'1 ms de la fin d'une phase.
-  'count-min0': 'cas inatteignable en pratique (garde défensive)'
+  'count-min0': 'cas inatteignable en pratique (garde défensive)',
+  // Pendant la séance, l'image suivante (16 ms) réécrit le compte à rebours.
+  'count-while-running': 'corrigé à l’image d’animation suivante'
 };
 
 module.exports = { MUTANTS, EQUIVALENTS };

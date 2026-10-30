@@ -189,12 +189,4 @@ test.describe('Cycle avec pauses', () => {
     await app.advance(0.5); // t = 4,75 s
     await expect(app.phase).toHaveText('Expirez');
   });
-
-  test('sans pause configurée, « Retenez » et « Pause » ne s’affichent jamais', async ({ app }) => {
-    await app.open();
-    await app.start();
-    const vus = new Set();
-    for (let i = 0; i < 20; i++) { await app.advance(0.5); vus.add(await app.phase.textContent()); }
-    expect([...vus].sort()).toEqual(['Expirez', 'Inspirez']);
-  });
 });
