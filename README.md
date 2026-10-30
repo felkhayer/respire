@@ -21,6 +21,7 @@ Accédez simplement à [https://felkhayer.github.io/respire/](https://felkhayer.
 - **Guidage visuel et sonore** : Animation circulaire et sons pour l'inspiration/expiration
 - **Personnalisable** : Réglage des durées d'inspiration, expiration, et pauses
 - **Préréglages** : 4-6, 5-5, 4-7-8, Carré 4
+- **Mode guidé** : séquences qui enchaînent plusieurs rythmes (Détente, Endormissement, Concentration), étape en cours affichée, son fidèle même écran éteint
 - **Thème clair/sombre** : Adaptation automatique ou manuelle
 - **Fonctionne en arrière-plan** : Le son continue même écran éteint
 - **Mode hors ligne** : Pas de connexion internet requise après installation
@@ -68,7 +69,7 @@ python3 -m http.server 8000
 
 ### Tests de non-régression
 Une suite de tests (Playwright + Chromium) vérifie chaque fonctionnalité : réglages, préréglages,
-cycle respiratoire, durée de séance, guide sonore, écran allumé, thème, accessibilité et PWA hors ligne.
+cycle respiratoire, durée de séance, mode guidé, guide sonore, écran allumé, thème, accessibilité et PWA hors ligne.
 ```bash
 npm install
 npx playwright install chromium   # une seule fois

@@ -39,8 +39,8 @@ const MUTANTS = [
   ['sound-nostop', H, 'if (!cfg.sound) stopAudio(); else if (running) schedule();', 'if (cfg.sound && running) schedule();'],
   ['sound-noresume', H, 'if (!cfg.sound) stopAudio(); else if (running) schedule();', 'if (!cfg.sound) stopAudio();'],
   ['sound-nosave', H, 'cfg.sound = !cfg.sound; save();', 'cfg.sound = !cfg.sound;'],
-  ['phases-hold1-always', H, 'if (cfg.hold1 > 0)', 'if (cfg.hold1 >= 0)'],
-  ['phases-nohold2', H, "if (cfg.hold2 > 0) p.push({ k: 'h2', n: 'Pause', d: cfg.hold2 });", ''],
+  ['phases-hold1-always', H, 'if (r.hold1 > 0)', 'if (r.hold1 >= 0)'],
+  ['phases-nohold2', H, "if (r.hold2 > 0) p.push({ k: 'h2', n: 'Pause', d: r.hold2 });", ''],
   ['phase-name', H, "n: 'Retenez'", "n: 'Retenir'"],
   ['level-h1', H, "if (ph.k === 'h1') return 1;", "if (ph.k === 'h1') return 0;"],
   ['level-out', H, "if (ph.k === 'out') return 1 - prog;", "if (ph.k === 'out') return prog;"],
@@ -80,11 +80,11 @@ const MUTANTS = [
   ['render-nocycles', H, "$('cycles').textContent = cycles;", ''],
   ['frame-noend', H, 'if (cfg.total > 0 && (now - startedAt) / 1000 >= cfg.total * 60) { stop(true); return; }', ''],
   ['frame-end-early', H, '>= cfg.total * 60) { stop(true)', '>= cfg.total * 60 - 5) { stop(true)'],
-  ['frame-nocycle', H, 'idx = 0; cycles++; list = phases(); }', 'idx = 0; list = phases(); }'],
-  ['frame-byindex', H, '    cur = ph.k;\n', '    cur = ORDER[idx];\n'],
-  ['frame-nocur', H, '    cur = ph.k;\n', ''],
+  ['frame-nocycle', H, 'idx = 0; p.cycles++; p.cycle = p.start; list = cycleList(p.start); }', 'idx = 0; p.cycle = p.start; list = cycleList(p.start); }'],
+  ['frame-byindex', H, 'p.cur = ph.k;', 'p.cur = ORDER[idx];'],
+  ['frame-nocur', H, 'cur = p.cur; phaseStart', 'phaseStart'],
   ['posof-exact', H, 'ORDER.indexOf(list[j].k) >= o', 'ORDER.indexOf(list[j].k) === o'],
-  ['frame-drift', H, 'phaseStart += ph.d * 1000;', 'phaseStart = now;'],
+  ['frame-drift', H, 'p.start += ph.d * 1000;', 'p.start = now;'],
   ['frame-nocatchup', H, 'while (el >= ph.d && guard++ < 2000)', 'if (el >= ph.d && guard++ < 2000)'],
   ['start-nocyclereset', H, "cur = 'in'; cycles = 0;\n", "cur = 'in';\n"],
   ['start-noidxreset', H, "hasRun = true; cur = 'in'; cycles = 0;", 'hasRun = true; cycles = 0;'],
@@ -153,6 +153,16 @@ const MUTANTS = [
   ['preset-46', H, "{ n: '4 – 6',   v: { inh: 4, hold1: 0, exh: 6, hold2: 0 } }", "{ n: '4 – 6',   v: { inh: 4, exh: 6 } }"],
 
   // --- Mode guidé ---
+  ['guide-sched-nostep', H, 'list = cycleList(ps); }', 'list = phases(); }'],
+  ['guide-sched-stale', H, 'var pos = catchUp(perfNow);', 'var pos = catchUp(phaseStart);'],
+  ['guide-frame-nocyclestart', H, 'p.cycles++; p.cycle = p.start; list = cycleList(p.start); }', 'p.cycles++; list = cycleList(p.start); }'],
+  ['guide-step-limit', H, 'if (t < lim - 0.001) return i;', 'if (t <= lim) return i;'],
+  ['guide-no-total', H, 'if (cfg.total !== g.total) { cfg.total = g.total; changed = true; }', ''],
+  ['guide-preset-stays', H, 'b.onclick = function () { leaveGuide(); Object.assign(cfg, p.v);', 'b.onclick = function () { Object.assign(cfg, p.v);'],
+  ['guide-setval-stays', H, 'function setVal(f, v) { leaveGuide(); ', 'function setVal(f, v) { '],
+  ['guide-nosave', H, 'guideFrame(); save(); renderSettings(); renderGuide();', 'guideFrame(); renderSettings(); renderGuide();'],
+  ['guide-chip-pressed', H, 'var on = !guide() && Object.keys', 'var on = Object.keys'],
+  ['guide-focus', H, '.chip:focus-visible, .seq:focus-visible,', '.chip:focus-visible,'],
 
   // --- Partage ---
 

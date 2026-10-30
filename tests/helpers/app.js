@@ -26,6 +26,7 @@ class App {
     this.disc = page.locator('#disc');
     this.arc = page.locator('#arc');
     this.dot = page.locator('#dot');
+    this.step = page.locator('#gstep'); // étape en cours du mode guidé
   }
 
   /**
@@ -95,6 +96,8 @@ class App {
     for (let i = 0; i < (times || 1); i++) await (sign === '+' ? s.plus : s.minus).click();
   }
   preset(name) { return this.page.getByRole('button', { name: name, exact: true }); }
+  /** Bouton d'une séquence du mode guidé : 'Détente' | 'Endormissement' | 'Concentration'. */
+  guide(name) { return this.page.locator('.seq', { hasText: name }); }
 
   async dataPhase() { return this.page.evaluate(() => document.body.getAttribute('data-phase')); }
   /** Échelle (0.5 → 1) du disque central. */
