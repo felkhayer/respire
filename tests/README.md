@@ -26,6 +26,7 @@ npm run test:mutation             # vérifie que la suite détecte les régressi
 | `cycle-respiratoire.spec.js` | Phases, compte à rebours, cycles, animation (disque, arc, point), temps écoulé, arrêt, rattrapage après gel de l'affichage |
 | `duree-seance.spec.js` | Fin automatique « Terminé », mode illimité, relance |
 | `reglages-en-cours.spec.js` | Modifier durées / préréglage pendant que la séance tourne (dont l'ajout / le retrait d'une pause située avant la phase en cours) |
+| `mode-guide.spec.js` | Séquences guidées : choix mémorisé, changement de rythme en fin de cycle (dont pile sur la limite), fin au total de la séquence, son programmé aux mêmes instants (reprogrammation, écran éteint), sortie par préréglage ou réglage, accessibilité |
 | `guide-sonore.spec.js` | Web Audio : notes 220 → 440 Hz, volumes, pauses, programmation à l'avance, interrupteur, repli `webkitAudioContext` |
 | `ecran-allume.spec.js` | Wake Lock, repli NoSleep.js, reprise à la visibilité |
 | `theme-accessibilite.spec.js` | Thème clair/sombre, couleurs de phase, ARIA (libellés des boutons, interrupteur), clavier, cibles tactiles, responsive |
@@ -70,7 +71,8 @@ Après l'ajout d'une fonctionnalité, ajoutez quelques mutants qui la cassent et
   `AudioContext` (journalise chaque note et chaque volume programmés), `navigator.wakeLock`, et
   NoSleep.js (le CDN est remplacé par un faux, donc les tests n'ont pas besoin de réseau).
 - **Fixture `app`** (`helpers/app.js`) : `app.open(options)`, `app.start()`, `app.advance(s)`,
-  `app.setting('inh').plus`, `app.preset('Carrée 4')`, `app.audioEvents(...)`, etc.
+  `app.setting('inh').plus`, `app.preset('Carrée 4')`, `app.guide('Détente')`, `app.step` (étape du mode guidé),
+  `app.audioEvents(...)`, etc.
   Options d'`open` : `storage`, `storageBroken`, `audio` (`standard` | `webkit` | `none`),
   `audioState`, `wakeLock` (`ok` | `reject` | `absent`), `noSleep`.
 - Le serveur statique (`helpers/server.js`) est lancé automatiquement par Playwright.

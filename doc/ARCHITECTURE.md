@@ -116,6 +116,36 @@ osc.frequency.exponentialRampToValueAtTime(targetFrequency, ctx.currentTime + du
 
 **Résultat** : Le guidage sonore continue **même écran éteint**, tant que le navigateur n'est pas complètement fermé.
 
+### 4. Mode guidé (séquences prédéfinies)
+
+Une séquence enchaîne plusieurs rythmes, chacun pendant une durée donnée :
+
+| Séquence | Étapes | Total |
+|---|---|---|
+| Détente | 4 – 4 (1 min) → 4 – 6 (2 min) → 4 – 8 (3 min) | 6 min |
+| Endormissement | 4 – 6 (2 min) → 4 – 7 – 8 (8 min) | 10 min |
+| Concentration | 5 – 5 (2 min) → Carrée 4 (6 min) → 5 – 5 (2 min) | 10 min |
+
+**Difficulté** : l'affichage (`frame()`, gelé écran éteint puis rattrapé d'un coup) et le son
+(`schedule()`, programmé jusqu'à 30 min à l'avance) doivent changer de rythme exactement aux mêmes instants.
+
+**Solution** :
+- `stepAt(séquence, t)` est une **fonction pure** : l'étape d'un cycle qui commence `t` secondes après le
+  début de la séance est la première dont la limite n'est pas atteinte (tolérance d'1 ms). Le rythme change
+  donc à la fin du premier cycle qui atteint ou dépasse la limite, jamais au milieu d'une phase.
+- `cycleList(début du cycle)` donne les phases d'un cycle (rythme de l'étape, sinon les réglages) ;
+  `phases(r)` accepte désormais un rythme.
+- `catchUp(now)` calcule, **sans rien modifier**, la position de la séance à l'instant `now` (phase, début de
+  phase et de cycle, cycles). `frame()` l'enregistre ; `schedule()` s'en sert puis cumule les débuts de phase
+  avec la même arithmétique (`+= durée * 1000`) : mêmes calculs, mêmes instants, même après un saut d'horloge.
+- La séquence choisie est mémorisée dans `cfg.guide` (clé absente hors mode guidé : la config par défaut est
+  inchangée). En mode guidé, les réglages affichent le rythme en vigueur et la durée de la séquence
+  (`cfg.total`), ce qui fait tomber la fin de séance au total de la séquence sans autre changement.
+- Choisir un préréglage, toucher un bouton − / + ou appuyer à nouveau sur la séquence quitte le mode guidé
+  (`leaveGuide()`), en repartant du rythme en cours. Choisie pendant une séance, une séquence s'applique
+  selon le temps déjà écoulé.
+- L'étape en cours (« Étape 2 / 3 · 4 – 6 ») s'affiche sous les statistiques (`aria-live="polite"`).
+
 ---
 
 ## 🎨 Interface Utilisateur
@@ -196,6 +226,7 @@ osc.frequency.exponentialRampToValueAtTime(targetFrequency, ctx.currentTime + du
 | Respect vie privée | Pas de tracking, localStorage seulement | ✅ Implémenté |
 | Accessible | ARIA, clavier, thèmes | ✅ Implémenté |
 | Multi-appareils | Design responsive | ✅ Implémenté |
+| Séquences guidées, son fidèle écran éteint | Fonction pure `stepAt()` partagée par l'affichage et le son | ✅ Implémenté |
 
 ---
 
@@ -234,7 +265,7 @@ et de NoSleep.js. Voir [tests/README.md](../tests/README.md).
 3. **Statistiques** : Graphiques de progression sur le long terme
 4. ✅ **Partage** : Permettre de partager ses configurations. Fait : le bouton « Partager ces réglages » construit un lien `#r=inh,hold1,exh,hold2,total` (ex. `#r=4,0,6,0,5`), partagé par `navigator.share` ou copié dans le presse-papiers ; à l'ouverture, le lien est validé, borné, appliqué puis retiré de l'adresse.
 5. ✅ **Rappels** : rappel quotidien par fichier agenda `.ics` (voir ci-dessous)
-6. **Mode guidé** : Séquences prédéfinies (méditation, endormissement, etc.)
+6. ✅ **Mode guidé** : séquences prédéfinies (Détente, Endormissement, Concentration), voir § 4
 
 ### Rappels : un fichier agenda plutôt que des notifications
 

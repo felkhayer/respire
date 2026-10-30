@@ -94,7 +94,7 @@ body[data-phase="h1"] .disc, body[data-phase="h2"] .disc { background: var(--hol
   background: var(--btn-bg); color: var(--btn-ink);
   font: inherit; font-size: 19px; font-weight: 700; cursor: pointer;
 }
-#go:focus-visible, .step button:focus-visible, .chip:focus-visible, .switch:focus-visible { outline: 3px solid var(--in); outline-offset: 3px; }
+#go:focus-visible, .step button:focus-visible, .chip:focus-visible, .seq:focus-visible, .switch:focus-visible { outline: 3px solid var(--in); outline-offset: 3px; }
 .stats { margin-top: 12px; color: var(--muted); font-size: 15px; display: flex; gap: 22px; font-variant-numeric: tabular-nums; }
 
 .panel { width: 100%; margin-top: 26px; padding-top: 20px; border-top: 1px solid var(--line); }
@@ -126,6 +126,19 @@ body[data-phase="h1"] .disc, body[data-phase="h2"] .disc { background: var(--hol
 .status { min-height: 1.5em; margin: 8px 0 0; font-size: 14px; color: var(--muted); text-align: center; }
 
 /* ---------- Mode guidé ---------- */
+.guide { width: 100%; margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--line); }
+.guide h2 { font-size: 16px; font-weight: 600; margin: 0 0 10px; color: var(--muted); }
+.seqs { display: grid; gap: 8px; }
+.seq {
+  display: block; width: 100%; min-height: 44px; padding: 9px 14px; text-align: left;
+  border: 1px solid var(--line); border-radius: 14px; background: transparent; color: var(--ink);
+  font: inherit; font-size: 16px; font-weight: 600; cursor: pointer;
+}
+.seq small { display: block; margin-top: 2px; font-size: 13px; font-weight: 400; color: var(--muted); overflow-wrap: anywhere; }
+.seq[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.seq[aria-pressed="true"] small { color: var(--bg); }
+.ghint { margin: 14px 0 0; font-size: 14px; color: var(--muted); line-height: 1.5; }
+.gstep { min-height: 1.4em; margin: 8px 0 0; font-size: 15px; font-weight: 600; color: var(--muted); text-align: center; font-variant-numeric: tabular-nums; }
 
 /* ---------- Partage ---------- */
 .share { margin-top: 14px; text-align: center; }
@@ -208,6 +221,11 @@ body[data-phase="h1"] .disc, body[data-phase="h2"] .disc { background: var(--hol
   </section>
 
   <!-- ---------- Mode guidé ---------- -->
+  <section class="guide" aria-labelledby="guidettl">
+    <h2 id="guidettl">Mode guidé</h2>
+    <div class="seqs" id="seqs"></div>
+    <p class="ghint">Chaque séquence enchaîne plusieurs rythmes ; le changement a lieu à la fin d'un cycle. Choisir un préréglage ou modifier un réglage quitte le mode guidé.</p>
+  </section>
 
   <!-- ---------- Partage ---------- -->
   <div class="share"><button id="share" class="chip" type="button">Partager ces réglages</button></div>
@@ -288,11 +306,12 @@ body[data-phase="h1"] .disc, body[data-phase="h2"] .disc { background: var(--hol
     plus.onclick = function () { setVal(f, cfg[f.k] + (f.step || 0.5)); };
     step.append(minus, out, plus); row.append(lab, step); rowsEl.appendChild(row);
   });
-  function setVal(f, v) { cfg[f.k] = Math.min(f.max, Math.max(f.min, v)); save(); renderSettings(); if (running) schedule(); }
+  // Mode guidé : modifier un réglage ou choisir un préréglage quitte le mode guidé (leaveGuide).
+  function setVal(f, v) { leaveGuide(); cfg[f.k] = Math.min(f.max, Math.max(f.min, v)); save(); renderSettings(); if (running) schedule(); }
 
   PRESETS.forEach(function (p) {
     var b = document.createElement('button'); b.type = 'button'; b.className = 'chip'; b.textContent = p.n;
-    b.onclick = function () { Object.assign(cfg, p.v); save(); renderSettings(); if (running) schedule(); };
+    b.onclick = function () { leaveGuide(); Object.assign(cfg, p.v); save(); renderSettings(); if (running) schedule(); };
     p.el = b; chipsEl.appendChild(b);
   });
 
@@ -300,7 +319,8 @@ body[data-phase="h1"] .disc, body[data-phase="h2"] .disc { background: var(--hol
     FIELDS.forEach(function (f) { outputs[f.k].textContent = fmtField(f); });
     if (!running && !hasRun) $('elapsed').textContent = '0:00' + totalSuffix();
     PRESETS.forEach(function (p) {
-      var on = Object.keys(p.v).every(function (k) { return cfg[k] === p.v[k]; });
+      // Mode guidé : aucun préréglage n'est sélectionné tant qu'une séquence est suivie.
+      var on = !guide() && Object.keys(p.v).every(function (k) { return cfg[k] === p.v[k]; });
       p.el.setAttribute('aria-pressed', on ? 'true' : 'false');
     });
     $('sound').setAttribute('aria-checked', cfg.sound ? 'true' : 'false');
@@ -313,11 +333,13 @@ body[data-phase="h1"] .disc, body[data-phase="h2"] .disc { background: var(--hol
   };
 
   // ---------- Phases ----------
-  function phases() {
-    var p = [{ k: 'in', n: 'Inspirez', d: cfg.inh }];
-    if (cfg.hold1 > 0) p.push({ k: 'h1', n: 'Retenez', d: cfg.hold1 });
-    p.push({ k: 'out', n: 'Expirez', d: cfg.exh });
-    if (cfg.hold2 > 0) p.push({ k: 'h2', n: 'Pause', d: cfg.hold2 });
+  // r : rythme { inh, hold1, exh, hold2 } du cycle (par défaut les réglages ; voir cycleList pour le mode guidé).
+  function phases(r) {
+    r = r || cfg;
+    var p = [{ k: 'in', n: 'Inspirez', d: r.inh }];
+    if (r.hold1 > 0) p.push({ k: 'h1', n: 'Retenez', d: r.hold1 });
+    p.push({ k: 'out', n: 'Expirez', d: r.exh });
+    if (r.hold2 > 0) p.push({ k: 'h2', n: 'Pause', d: r.hold2 });
     return p;
   }
   function levelOf(ph, prog) {
@@ -365,10 +387,11 @@ body[data-phase="h1"] .disc, body[data-phase="h2"] .disc { background: var(--hol
     initAudio();
     if (!osc) return;
     var now = ctx.currentTime, perfNow = performance.now();
-    var list = phases();
-    var i = posOf(list, cur);
-    if (i >= list.length) i = 0;
-    var el = Math.max(0, (perfNow - phaseStart) / 1000);
+    // Recalage commun avec frame() : la position est juste même si l'affichage était gelé.
+    var pos = catchUp(perfNow);
+    var list = pos.list, i = pos.idx;
+    var ps = pos.start; // début (ms, horloge de la page) de la phase programmée, cumulé comme dans catchUp()
+    var el = Math.max(0, (perfNow - pos.start) / 1000);
     var f = osc.frequency, g = gain.gain;
     var curGain = g.value;
     f.cancelScheduledValues(now); g.cancelScheduledValues(now);
@@ -386,8 +409,9 @@ body[data-phase="h1"] .disc, body[data-phase="h2"] .disc { background: var(--hol
       if (!first) f.setValueAtTime(F0 * Math.pow(2, levelOf(ph, 0)), t);
       if (!hold) f.exponentialRampToValueAtTime(F0 * Math.pow(2, levelOf(ph, 1)), t + d);
       g.setTargetAtTime(hold ? 0.06 : 0.15, t, 0.08);
-      t += d; i++;
-      if (i >= list.length) { i = 0; list = phases(); }
+      t += d; i++; ps += ph.d * 1000;
+      // Rythme du cycle suivant (mode guidé) : même calcul que catchUp(), donc mêmes instants de changement.
+      if (i >= list.length) { i = 0; list = cycleList(ps); }
       first = false;
     }
     if (endAt !== Infinity) {
@@ -423,6 +447,7 @@ body[data-phase="h1"] .disc, body[data-phase="h2"] .disc { background: var(--hol
 
   // ---------- Boucle ----------
   var running = false, hasRun = false, cur = 'in', phaseStart = 0, startedAt = 0, cycles = 0;
+  var cycleStart = 0; // début (ms) du cycle en cours : fixe le rythme du cycle en mode guidé
   var C = 2 * Math.PI * 140;
   var arc = $('arc'), dot = $('dot'), disc = $('disc');
 
@@ -443,21 +468,33 @@ body[data-phase="h1"] .disc, body[data-phase="h2"] .disc { background: var(--hol
     $('elapsed').textContent = Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0') + totalSuffix();
   }
 
+  // Position de la séance à l'instant `now` (ms), rattrapée depuis l'état courant : phase (cur), début de
+  // phase (start), début de cycle (cycle), cycles. Ne modifie rien : frame() l'enregistre, schedule()
+  // s'en sert pour programmer le son. Les deux calculent ainsi les mêmes instants (notamment les
+  // changements d'étape du mode guidé), même après un long gel de l'affichage.
+  function catchUp(now) {
+    var p = { cur: cur, start: phaseStart, cycle: cycleStart, cycles: cycles };
+    var list = cycleList(p.cycle);
+    var idx = posOf(list, p.cur);
+    if (idx >= list.length) { idx = 0; p.cycles++; p.cycle = p.start; list = cycleList(p.cycle); }
+    var ph = list[idx], el = (now - p.start) / 1000, guard = 0;
+    while (el >= ph.d && guard++ < 2000) {
+      p.start += ph.d * 1000;
+      idx++;
+      if (idx >= list.length) { idx = 0; p.cycles++; p.cycle = p.start; list = cycleList(p.start); }
+      ph = list[idx];
+      el = (now - p.start) / 1000;
+    }
+    p.cur = ph.k; p.list = list; p.idx = idx; p.ph = ph; p.el = el;
+    return p;
+  }
+
   function frame(now) {
     if (!running) return;
     if (cfg.total > 0 && (now - startedAt) / 1000 >= cfg.total * 60) { stop(true); return; }
-    var list = phases();
-    var idx = posOf(list, cur);
-    if (idx >= list.length) { idx = 0; cycles++; }
-    var ph = list[idx], el = (now - phaseStart) / 1000, guard = 0;
-    while (el >= ph.d && guard++ < 2000) {
-      phaseStart += ph.d * 1000;
-      idx++;
-      if (idx >= list.length) { idx = 0; cycles++; list = phases(); }
-      ph = list[idx];
-      el = (now - phaseStart) / 1000;
-    }
-    cur = ph.k;
+    var p = catchUp(now), ph = p.ph, el = p.el;
+    cur = p.cur; phaseStart = p.start; cycleStart = p.cycle; cycles = p.cycles;
+    guideFrame(); // Mode guidé : étape affichée
     render(ph, Math.min(Math.max(el / ph.d, 0), 1), now);
     requestAnimationFrame(frame);
   }
@@ -465,7 +502,7 @@ body[data-phase="h1"] .disc, body[data-phase="h2"] .disc { background: var(--hol
   function start() {
     if (cfg.sound) initAudio();
     running = true; hasRun = true; cur = 'in'; cycles = 0;
-    phaseStart = startedAt = performance.now();
+    cycleStart = phaseStart = startedAt = performance.now();
     $('go').textContent = 'Arrêter';
     getLock();
     schedule();
@@ -496,6 +533,86 @@ body[data-phase="h1"] .disc, body[data-phase="h2"] .disc { background: var(--hol
   $('go').onclick = function () { running ? stop(false) : start(); };
 
   // ---------- Mode guidé ----------
+  // Une séquence enchaîne plusieurs rythmes, chacun pendant `min` minutes. Le rythme change à la fin
+  // du premier cycle qui atteint ou dépasse la limite de l'étape ; la séance dure le total de la séquence.
+  // cfg.guide (absent hors mode guidé) mémorise la séquence choisie. Pendant le mode guidé, les réglages
+  // affichent le rythme en vigueur (copié dans cfg) et la durée de la séquence.
+  function rh(inh, hold1, exh, hold2) { return { inh: inh, hold1: hold1, exh: exh, hold2: hold2 }; }
+  var GUIDES = [
+    { id: 'detente', n: 'Détente', steps: [
+      { n: '4 – 4', min: 1, v: rh(4, 0, 4, 0) },
+      { n: '4 – 6', min: 2, v: rh(4, 0, 6, 0) },
+      { n: '4 – 8', min: 3, v: rh(4, 0, 8, 0) }] },
+    { id: 'sommeil', n: 'Endormissement', steps: [
+      { n: '4 – 6', min: 2, v: rh(4, 0, 6, 0) },
+      { n: '4 – 7 – 8', min: 8, v: rh(4, 7, 8, 0) }] },
+    { id: 'concentration', n: 'Concentration', steps: [
+      { n: '5 – 5', min: 2, v: rh(5, 0, 5, 0) },
+      { n: 'Carrée 4', min: 6, v: rh(4, 4, 4, 4) },
+      { n: '5 – 5', min: 2, v: rh(5, 0, 5, 0) }] }
+  ];
+  GUIDES.forEach(function (g) { g.total = g.steps.reduce(function (s, st) { return s + st.min; }, 0); });
+
+  function guide() {
+    for (var i = 0; i < GUIDES.length; i++) if (GUIDES[i].id === cfg.guide) return GUIDES[i];
+    return null;
+  }
+  // Étape d'un cycle qui commence à `t` secondes du début de la séance : la première dont la limite
+  // n'est pas encore atteinte. Fonction pure : frame() et schedule() en déduisent les mêmes instants.
+  // Tolérance d'1 ms : un cycle qui finit pile sur la limite (aux arrondis près) passe à l'étape suivante.
+  function stepAt(g, t) {
+    var lim = 0;
+    for (var i = 0; i < g.steps.length; i++) { lim += g.steps[i].min * 60; if (t < lim - 0.001) return i; }
+    return g.steps.length - 1;
+  }
+  // Phases d'un cycle commençant à l'instant `cs` (ms, horloge de la page) : rythme de l'étape en mode
+  // guidé, sinon les réglages.
+  function cycleList(cs) {
+    var g = guide();
+    return phases(g ? g.steps[stepAt(g, (cs - startedAt) / 1000)].v : cfg);
+  }
+
+  // Affiche l'étape en cours et recopie son rythme (et la durée de la séquence) dans les réglages.
+  // Hors séance, c'est la première étape. Appelée à chaque image, au choix d'une séquence et à l'arrêt.
+  var gstep = document.createElement('p');
+  gstep.className = 'gstep'; gstep.id = 'gstep'; gstep.setAttribute('aria-live', 'polite');
+  var statsEl = document.querySelector('.stats');
+  statsEl.parentNode.insertBefore(gstep, statsEl.nextSibling);
+  function guideFrame() {
+    var g = guide(), text = '';
+    if (g) {
+      var i = running ? stepAt(g, (cycleStart - startedAt) / 1000) : 0, st = g.steps[i], changed = false;
+      ['inh', 'hold1', 'exh', 'hold2'].forEach(function (k) { if (cfg[k] !== st.v[k]) { cfg[k] = st.v[k]; changed = true; } });
+      if (cfg.total !== g.total) { cfg.total = g.total; changed = true; }
+      if (changed) renderSettings();
+      if (running) text = 'Étape ' + (i + 1) + ' / ' + g.steps.length + ' · ' + st.n;
+    }
+    if (gstep.textContent !== text) gstep.textContent = text;
+  }
+
+  var seqsEl = $('seqs');
+  GUIDES.forEach(function (g) {
+    var b = document.createElement('button'); b.type = 'button'; b.className = 'seq';
+    var detail = document.createElement('small');
+    detail.textContent = g.steps.map(function (st) { return st.n + ' (' + st.min + ' min)'; }).join(' → ') + ' · ' + g.total + ' min';
+    b.append(g.n, ' ', detail);
+    b.onclick = function () {
+      if (cfg.guide === g.id) delete cfg.guide; else cfg.guide = g.id; // un second appui quitte le mode guidé
+      guideFrame(); save(); renderSettings(); renderGuide();
+      if (running) schedule();
+    };
+    g.el = b; seqsEl.appendChild(b);
+  });
+  function renderGuide() {
+    var sel = guide();
+    GUIDES.forEach(function (g) { g.el.setAttribute('aria-pressed', g === sel ? 'true' : 'false'); });
+  }
+  function leaveGuide() {
+    if (!('guide' in cfg)) return;
+    delete cfg.guide; renderGuide(); guideFrame();
+  }
+  on('stop', guideFrame);
+  renderGuide(); guideFrame();
 
   // ---------- Partage ----------
   // Lien « <page>#r=inh,hold1,exh,hold2,total ». Le fragment n'est jamais envoyé au serveur.
