@@ -23,6 +23,7 @@ Accédez simplement à [https://felkhayer.github.io/respire/](https://felkhayer.
 - **Préréglages** : 4-6, 5-5, 4-7-8, Carré 4
 - **Thème clair/sombre** : Adaptation automatique ou manuelle
 - **Fonctionne en arrière-plan** : Le son continue même écran éteint
+- **Rappel quotidien** : choisissez une heure et ajoutez un événement récurrent à l'agenda de votre téléphone (fichier `.ics`), sans serveur ni notification
 - **Mode hors ligne** : Pas de connexion internet requise après installation
 - **Sans publicité, sans tracking**
 

@@ -132,6 +132,25 @@ body[data-phase="h1"] .disc, body[data-phase="h2"] .disc { background: var(--hol
 /* ---------- Historique et statistiques ---------- */
 
 /* ---------- Rappels ---------- */
+.reminder { width: 100%; margin-top: 18px; padding-top: 6px; border-top: 1px solid var(--line); }
+.reminder summary {
+  min-height: 44px; display: flex; align-items: center; cursor: pointer;
+  font-size: 16px; font-weight: 600; color: var(--ink);
+}
+.reminder summary:focus-visible, .reminder input:focus-visible, .reminder button:focus-visible {
+  outline: 3px solid var(--in);
+  outline-offset: 3px;
+}
+.reminder .row { padding: 4px 0; }
+.reminder .rem-help { margin: 12px 0 8px; font-size: 14px; color: var(--muted); line-height: 1.5; }
+.reminder input[type="time"] {
+  min-width: 120px; min-height: 44px; padding: 0 10px; font: inherit; font-size: 17px;
+  border: 1px solid var(--line); border-radius: 12px; background: var(--panel); color: var(--ink);
+}
+.reminder .action {
+  min-height: 44px; margin-top: 8px; padding: 0 18px; border: 1px solid var(--line); border-radius: 22px;
+  background: var(--btn-bg); color: var(--btn-ink); font: inherit; font-size: 16px; font-weight: 600; cursor: pointer;
+}
 
 @media (prefers-reduced-motion: reduce) { .disc, #phase, svg { transition: none; } }
 </style>
@@ -172,6 +191,15 @@ body[data-phase="h1"] .disc, body[data-phase="h2"] .disc { background: var(--hol
   <!-- ---------- Historique et statistiques ---------- -->
 
   <!-- ---------- Rappels ---------- -->
+  <details class="reminder" id="reminder">
+    <summary>Rappel quotidien</summary>
+    <div class="row">
+      <label for="remtime">Heure du rappel</label>
+      <input type="time" id="remtime" value="08:00" required>
+    </div>
+    <button type="button" class="action" id="remadd">Ajouter à mon agenda</button>
+    <p class="rem-help">Le rappel est confié à l’agenda de votre téléphone : aucun serveur, aucune donnée ne quitte l’appareil, et cela fonctionne hors ligne.</p>
+  </details>
 
 </main>
 
@@ -444,6 +472,62 @@ body[data-phase="h1"] .disc, body[data-phase="h2"] .disc { background: var(--hol
   // ---------- Historique et statistiques ----------
 
   // ---------- Rappels ----------
+  // Sans serveur, pas de notification fiable : le rappel est un fichier agenda (.ics) quotidien.
+  var REM_KEY = 'respiration-reminder', REM_DEF = '08:00';
+  function pad2(n) { return (n < 10 ? '0' : '') + n; }
+  function validTime(s) { return typeof s === 'string' && /^([01]\d|2[0-3]):[0-5]\d$/.test(s); }
+  function loadReminder() {
+    try { var s = localStorage.getItem(REM_KEY); if (validTime(s)) return s; } catch (e) {}
+    return REM_DEF;
+  }
+  function saveReminder(v) { try { localStorage.setItem(REM_KEY, v); } catch (e) {} }
+  // Premier créneau à venir pour « hh:mm » : aujourd'hui s'il est strictement postérieur à now,
+  // sinon demain. Renvoie la date locale flottante « YYYYMMDDTHHMM00 ».
+  function reminderStart(now, hhmm) {
+    var h = +hhmm.slice(0, 2), m = +hhmm.slice(3, 5);
+    var y = now.getFullYear(), mo = now.getMonth(), d = now.getDate();
+    var t = new Date(y, mo, d, h, m, 0);
+    if (t.getTime() <= now.getTime()) t = new Date(y, mo, d + 1, h, m, 0);
+    return t.getFullYear() + pad2(t.getMonth() + 1) + pad2(t.getDate()) + 'T' + hhmm.slice(0, 2) + hhmm.slice(3, 5) + '00';
+  }
+  function icsText(s) { return String(s).replace(/\\/g, '\\\\').replace(/;/g, '\\;').replace(/,/g, '\\,').replace(/\r?\n/g, '\\n'); }
+  // Lignes de 75 caractères au plus : la suite est repliée (CRLF + espace), comme l'exige la RFC 5545.
+  function icsFold(line) {
+    var out = line.slice(0, 70);
+    for (var i = 70; i < line.length; i += 69) out += '\r\n ' + line.slice(i, i + 69);
+    return out;
+  }
+  function buildIcs(now, hhmm) {
+    var stamp = now.toISOString().replace(/[-:]/g, '').replace(/\.\d+/, '');
+    var url = location.href.split('#')[0];
+    return [
+      'BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Respirer//FR', 'CALSCALE:GREGORIAN',
+      'BEGIN:VEVENT',
+      'UID:' + now.getTime() + '@respirer',
+      'DTSTAMP:' + stamp,
+      'DTSTART:' + reminderStart(now, hhmm),
+      'DURATION:PT10M',
+      'RRULE:FREQ=DAILY',
+      'SUMMARY:' + icsText('Respiration lente'),
+      'DESCRIPTION:' + icsText('Prenez dix minutes pour respirer lentement, sans écran.'),
+      'URL:' + url,
+      'BEGIN:VALARM', 'ACTION:DISPLAY', 'DESCRIPTION:' + icsText('Respiration lente'), 'TRIGGER:PT0M', 'END:VALARM',
+      'END:VEVENT', 'END:VCALENDAR'
+    ].map(icsFold).join('\r\n') + '\r\n';
+  }
+  var remInput = $('remtime');
+  remInput.value = loadReminder();
+  remInput.addEventListener('input', function () { if (validTime(remInput.value)) saveReminder(remInput.value); });
+  $('remadd').onclick = function () {
+    var hhmm = validTime(remInput.value) ? remInput.value : loadReminder();
+    var blob = new Blob([buildIcs(new Date(), hhmm)], { type: 'text/calendar;charset=utf-8' });
+    var href = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = href; a.download = 'respirer-rappel.ics';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(href);
+    say('Rappel téléchargé : ouvrez le fichier pour l\u2019ajouter à votre agenda');
+  };
 
   renderSettings();
 

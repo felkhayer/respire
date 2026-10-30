@@ -159,6 +159,16 @@ const MUTANTS = [
   // --- Historique et statistiques ---
 
   // --- Rappels ---
+  ['rem-key', H, "var REM_KEY = 'respiration-reminder'", "var REM_KEY = 'respiration-cfg'"],
+  ['rem-default', H, "REM_DEF = '08:00';", "REM_DEF = '09:00';"],
+  ['rem-boundary', H, 'if (t.getTime() <= now.getTime()) t = new Date', 'if (t.getTime() < now.getTime()) t = new Date'],
+  ['rem-no-tomorrow', H, 'if (t.getTime() <= now.getTime()) t = new Date(y, mo, d + 1, h, m, 0);', ''],
+  ['ics-lf', H, ".join('\\r\\n') + '\\r\\n';", ".join('\\n') + '\\n';"],
+  ['ics-no-escape', H, ".replace(/,/g, '\\\\,')", ''],
+  ['ics-floating-z', H, "'DTSTART:' + reminderStart(now, hhmm),", "'DTSTART:' + reminderStart(now, hhmm) + 'Z',"],
+  ['ics-url-hash', H, "location.href.split('#')[0];\n    return [", "location.href;\n    return ["],
+  ['ics-no-fold', H, '].map(icsFold).join', '].map(String).join'],
+  ['ics-no-revoke', H, 'URL.revokeObjectURL(href);', ''],
 
   // --- Internationalisation ---
 ];
