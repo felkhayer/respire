@@ -121,6 +121,19 @@ test.describe('Guide sonore', () => {
       expect(osc.stopCalls).toContain(60.6);
     });
 
+    test('reprogrammer le son en cours de séance garde la fin à l’heure prévue', async ({ app }) => {
+      await app.open({ storage: { [CLE]: JSON.stringify({ total: 1 }) } });
+      await app.start();
+      await app.advance(30);
+      await app.click('exh', '+'); // reprogramme le son à t = 30 s
+      const gains = await app.audioEvents({ node: 'gain0', param: 'gain' });
+      const derniere = gains.slice(gains.map((e) => e.method).lastIndexOf('cancelScheduledValues') + 1);
+      const fade = derniere.find((e) => e.method === 'setTargetAtTime' && e.args[0] === 0);
+      expect(fade.args[1]).toBeCloseTo(60, 1); // et non 30 + 60 = 90 s
+      const [osc] = (await app.audio()).oscillators;
+      expect(osc.stopCalls[osc.stopCalls.length - 1]).toBeCloseTo(60.6, 1);
+    });
+
     test('pas d’arrêt programmé en mode illimité', async ({ app }) => {
       await app.open({ storage: { [CLE]: JSON.stringify({ total: 0 }) } });
       await app.start();
