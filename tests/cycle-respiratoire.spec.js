@@ -65,7 +65,10 @@ test.describe('Cycle respiratoire (4 s / 6 s par défaut)', () => {
     const C = 2 * Math.PI * 140;
     await app.advance(2); // mi-inspiration
     expect(await app.dashOffset()).toBeCloseTo(C / 2, -1);
-    await app.advance(5); // t = 7 s, mi-expiration : l'arc repart de zéro et est de nouveau à moitié
+    await app.advance(3.5); // t = 5,5 s, quart de l'expiration : l'arc repart de zéro et se remplit
+    // (il suit la progression de la phase, pas le niveau des poumons qui, lui, diminue)
+    expect(await app.dashOffset()).toBeCloseTo(C * 0.75, -1);
+    await app.advance(1.5); // t = 7 s, mi-expiration
     expect(await app.dashOffset()).toBeCloseTo(C / 2, -1);
   });
 
