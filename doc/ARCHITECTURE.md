@@ -230,7 +230,7 @@ et de NoSleep.js. Voir [tests/README.md](../tests/README.md).
 ## 🔮 Améliorations Possibles
 
 1. **Internationalisation** : Traduire en anglais et autres langues
-2. **Historique** : Sauvegarder l'historique des séances
+2. ~~**Historique** : Sauvegarder l'historique des séances~~ — **réalisé** : clé `respiration-history` (500 séances au plus, séances d'au moins 30 s), liste des 10 dernières dans un `<details>`, effacement confirmé ; `loadHistory()` / `renderHistory()` servent de base aux statistiques
 3. **Statistiques** : Graphiques de progression sur le long terme
 4. **Partage** : Permettre de partager ses configurations
 5. **Notifications** : Rappels pour pratiquer régulièrement

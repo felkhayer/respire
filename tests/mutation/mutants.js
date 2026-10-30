@@ -157,6 +157,16 @@ const MUTANTS = [
   // --- Partage ---
 
   // --- Historique et statistiques ---
+  ['hist-key', H, "var HISTORY_KEY = 'respiration-history'", "var HISTORY_KEY = 'respiration-historique'"],
+  ['hist-min-30', H, 'if (r.seconds < HISTORY_MIN_SECONDS) return;', 'if (r.seconds <= HISTORY_MIN_SECONDS) return;'],
+  ['hist-max-500', H, 'HISTORY_MAX = 500', 'HISTORY_MAX = 501'],
+  ['hist-keep-oldest', H, 'saveHistory(h.slice(-HISTORY_MAX));', 'saveHistory(h.slice(0, HISTORY_MAX));'],
+  ['hist-start-at-stop', H, 'd: sessionStart,', 'd: Date.now(),'],
+  ['hist-rhythm-at-stop', H, 'r: sessionRhythm,', 'r: [cfg.inh, cfg.hold1, cfg.exh, cfg.hold2],'],
+  ['hist-done-false', H, 'done: r.done }', 'done: false }'],
+  ['hist-order-oldest-first', H, 'loadHistory().slice(-HISTORY_SHOWN).reverse()', 'loadHistory().slice(-HISTORY_SHOWN)'],
+  ['hist-shown-11', H, 'HISTORY_SHOWN = 10', 'HISTORY_SHOWN = 11'],
+  ['hist-clear-noconfirm', H, "if (!confirm('Effacer tout l’historique des séances ?')) return;", ''],
 
   // --- Rappels ---
 

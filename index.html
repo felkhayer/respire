@@ -130,6 +130,27 @@ body[data-phase="h1"] .disc, body[data-phase="h2"] .disc { background: var(--hol
 /* ---------- Partage ---------- */
 
 /* ---------- Historique et statistiques ---------- */
+.history { width: 100%; margin-top: 26px; padding-top: 12px; border-top: 1px solid var(--line); }
+.history summary {
+  display: flex; align-items: center; min-height: 44px; cursor: pointer;
+  font-size: 16px; font-weight: 600; color: var(--ink);
+}
+.history summary:focus-visible, #clear-history:focus-visible {
+  outline: 3px solid var(--in);
+  outline-offset: 3px;
+}
+.history ul { list-style: none; margin: 4px 0 0; padding: 0; }
+.history li {
+  display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 2px 12px;
+  padding: 9px 0; border-bottom: 1px solid var(--line); font-size: 15px;
+}
+.history .when { overflow-wrap: anywhere; }
+.history .meta { color: var(--muted); font-variant-numeric: tabular-nums; }
+.history .empty { margin: 8px 0; color: var(--muted); font-size: 15px; }
+#clear-history {
+  margin-top: 12px; min-height: 44px; padding: 0 18px; border: 1px solid var(--line); border-radius: 22px;
+  background: transparent; color: var(--ink); font: inherit; font-size: 15px; cursor: pointer;
+}
 
 /* ---------- Rappels ---------- */
 
@@ -170,6 +191,12 @@ body[data-phase="h1"] .disc, body[data-phase="h2"] .disc { background: var(--hol
   <!-- ---------- Partage ---------- -->
 
   <!-- ---------- Historique et statistiques ---------- -->
+  <details class="history" id="history">
+    <summary>Historique</summary>
+    <ul id="history-list"></ul>
+    <p class="empty" id="history-empty">Aucune séance enregistrée</p>
+    <button type="button" id="clear-history">Effacer l’historique</button>
+  </details>
 
   <!-- ---------- Rappels ---------- -->
 
@@ -442,6 +469,56 @@ body[data-phase="h1"] .disc, body[data-phase="h2"] .disc { background: var(--hol
   // ---------- Partage ----------
 
   // ---------- Historique et statistiques ----------
+  var HISTORY_KEY = 'respiration-history', HISTORY_MAX = 500, HISTORY_MIN_SECONDS = 30, HISTORY_SHOWN = 10;
+  // Toujours un tableau : vide si le stockage est interdit, le JSON corrompu ou d'un autre type.
+  function loadHistory() {
+    try {
+      var h = JSON.parse(localStorage.getItem(HISTORY_KEY));
+      if (Array.isArray(h)) return h.filter(function (e) {
+        return e && typeof e === 'object' && isFinite(e.d) && isFinite(e.s) && isFinite(e.c) && Array.isArray(e.r);
+      });
+    } catch (e) {}
+    return [];
+  }
+  function saveHistory(h) { try { localStorage.setItem(HISTORY_KEY, JSON.stringify(h)); } catch (e) {} }
+  var sessionStart = 0, sessionRhythm = [];
+  on('start', function () {
+    sessionStart = Date.now();
+    sessionRhythm = [cfg.inh, cfg.hold1, cfg.exh, cfg.hold2];
+  });
+  on('stop', function (r) {
+    if (r.seconds < HISTORY_MIN_SECONDS) return;
+    var h = loadHistory();
+    h.push({ d: sessionStart, s: r.seconds, c: r.cycles, r: sessionRhythm, done: r.done });
+    saveHistory(h.slice(-HISTORY_MAX));
+    renderHistory();
+  });
+  function fmtRhythm(r) {
+    return r.filter(function (v, i) { return i === 0 || i === 2 || v > 0; })
+      .map(function (v) { return String(v).replace('.', ','); }).join(' – ');
+  }
+  var dateFmt = new Intl.DateTimeFormat('fr-FR', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+  function renderHistory() {
+    var h = loadHistory().slice(-HISTORY_SHOWN).reverse(), list = $('history-list');
+    list.textContent = '';
+    h.forEach(function (e) {
+      var li = document.createElement('li');
+      var when = document.createElement('span'); when.className = 'when'; when.textContent = dateFmt.format(new Date(e.d));
+      var meta = document.createElement('span'); meta.className = 'meta';
+      meta.textContent = Math.floor(e.s / 60) + ':' + String(e.s % 60).padStart(2, '0') + ' · ' +
+        e.c + (e.c > 1 ? ' cycles' : ' cycle') + ' · ' + fmtRhythm(e.r);
+      li.append(when, meta); list.appendChild(li);
+    });
+    $('history-empty').hidden = h.length > 0;
+    $('clear-history').hidden = h.length === 0;
+  }
+  $('clear-history').onclick = function () {
+    if (!confirm('Effacer tout l’historique des séances ?')) return;
+    try { localStorage.removeItem(HISTORY_KEY); } catch (e) {}
+    renderHistory();
+    say('Historique effacé');
+  };
+  renderHistory();
 
   // ---------- Rappels ----------
 

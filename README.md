@@ -21,6 +21,7 @@ Accédez simplement à [https://felkhayer.github.io/respire/](https://felkhayer.
 - **Guidage visuel et sonore** : Animation circulaire et sons pour l'inspiration/expiration
 - **Personnalisable** : Réglage des durées d'inspiration, expiration, et pauses
 - **Préréglages** : 4-6, 5-5, 4-7-8, Carré 4
+- **Historique des séances** : les 10 dernières séances (date, durée, cycles, rythme), conservées sur l'appareil (500 au plus, seules les séances d'au moins 30 s), effaçables
 - **Thème clair/sombre** : Adaptation automatique ou manuelle
 - **Fonctionne en arrière-plan** : Le son continue même écran éteint
 - **Mode hors ligne** : Pas de connexion internet requise après installation
