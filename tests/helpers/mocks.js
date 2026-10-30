@@ -82,6 +82,35 @@ function installMocks(opts) {
     };
   }
   Object.defineProperty(navigator, 'wakeLock', { value: value, configurable: true });
+
+  // ----- Partage : navigator.share et navigator.clipboard (enregistrent ce qui est partagé / copié) -----
+  var sh = window.__share = { shares: [], copies: [] };
+  var shareMode = opts.share || 'absent';
+  var shareValue;
+  if (shareMode === 'absent') {
+    shareValue = undefined;
+  } else {
+    shareValue = function (data) {
+      sh.shares.push(data);
+      if (shareMode === 'ok') return Promise.resolve();
+      return Promise.reject({ name: shareMode === 'abort' ? 'AbortError' : 'NotAllowedError' });
+    };
+  }
+  Object.defineProperty(navigator, 'share', { value: shareValue, configurable: true });
+  var clipMode = opts.clipboard || 'ok';
+  var clipValue;
+  if (clipMode === 'absent') {
+    clipValue = undefined;
+  } else {
+    clipValue = {
+      writeText: function (text) {
+        sh.copies.push(text);
+        if (clipMode === 'reject') return Promise.reject(new Error('NotAllowedError'));
+        return Promise.resolve();
+      }
+    };
+  }
+  Object.defineProperty(navigator, 'clipboard', { value: clipValue, configurable: true });
 }
 
 // Faux NoSleep.js servi à la place du CDN (réseau indisponible, comportement déterministe).

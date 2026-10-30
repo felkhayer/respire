@@ -232,7 +232,7 @@ et de NoSleep.js. Voir [tests/README.md](../tests/README.md).
 1. **Internationalisation** : Traduire en anglais et autres langues
 2. **Historique** : Sauvegarder l'historique des séances
 3. **Statistiques** : Graphiques de progression sur le long terme
-4. **Partage** : Permettre de partager ses configurations
+4. ✅ **Partage** : Permettre de partager ses configurations. Fait : le bouton « Partager ces réglages » construit un lien `#r=inh,hold1,exh,hold2,total` (ex. `#r=4,0,6,0,5`), partagé par `navigator.share` ou copié dans le presse-papiers ; à l'ouverture, le lien est validé, borné, appliqué puis retiré de l'adresse.
 5. **Notifications** : Rappels pour pratiquer régulièrement
 6. **Mode guidé** : Séquences prédéfinies (méditation, endormissement, etc.)
 

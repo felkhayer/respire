@@ -21,6 +21,7 @@ npm run test:mutation             # vérifie que la suite détecte les régressi
 |---|---|
 | `affichage-initial.spec.js` | Écran d'accueil : titre, état « Prêt », valeurs par défaut |
 | `reglages.spec.js` | Boutons − / +, pas, bornes, format `4,5 s`, « Illimitée », **persistance** (localStorage, corrompu, interdit) |
+| `partage.spec.js` | Lien de partage des réglages : construction, import, validation, replis share / presse-papiers |
 | `prereglages.spec.js` | 4 – 6, 5 – 5, 4 – 7 – 8, Carrée 4 : valeurs, sélection, interactions avec les réglages |
 | `cycle-respiratoire.spec.js` | Phases, compte à rebours, cycles, animation (disque, arc, point), temps écoulé, arrêt, rattrapage après gel de l'affichage |
 | `duree-seance.spec.js` | Fin automatique « Terminé », mode illimité, relance |

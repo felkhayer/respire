@@ -128,6 +128,8 @@ body[data-phase="h1"] .disc, body[data-phase="h2"] .disc { background: var(--hol
 /* ---------- Mode guidé ---------- */
 
 /* ---------- Partage ---------- */
+.share { margin-top: 14px; text-align: center; }
+#share { min-height: 44px; }
 
 /* ---------- Historique et statistiques ---------- */
 
@@ -168,6 +170,7 @@ body[data-phase="h1"] .disc, body[data-phase="h2"] .disc { background: var(--hol
   <!-- ---------- Mode guidé ---------- -->
 
   <!-- ---------- Partage ---------- -->
+  <div class="share"><button id="share" class="chip" type="button">Partager ces réglages</button></div>
 
   <!-- ---------- Historique et statistiques ---------- -->
 
@@ -440,6 +443,52 @@ body[data-phase="h1"] .disc, body[data-phase="h2"] .disc { background: var(--hol
   // ---------- Mode guidé ----------
 
   // ---------- Partage ----------
+  // Lien « <page>#r=inh,hold1,exh,hold2,total ». Le fragment n'est jamais envoyé au serveur.
+  var SHARE_KEYS = ['inh', 'hold1', 'exh', 'hold2', 'total'];
+  function shareUrl() {
+    return location.href.split('#')[0] + '#r=' + SHARE_KEYS.map(function (k) { return cfg[k]; }).join(',');
+  }
+  // undefined : pas un lien de réglages ; null : lien invalide ; objet : valeurs bornées et arrondies.
+  function parseShared(hash) {
+    if (typeof hash !== 'string' || hash.indexOf('#r=') !== 0) return undefined;
+    var parts = hash.slice(3).split(',');
+    if (parts.length !== SHARE_KEYS.length) return null;
+    var out = {};
+    for (var i = 0; i < SHARE_KEYS.length; i++) {
+      var k = SHARE_KEYS[i], raw = parts[i];
+      if (/^\s*$/.test(raw)) return null;
+      var v = Number(raw);
+      if (!isFinite(v)) return null;
+      var f = FIELDS.filter(function (x) { return x.k === k; })[0], step = f.step || 0.5;
+      v = Math.round(v / step) * step;
+      out[k] = Math.max(f.min, Math.min(f.max, v));
+    }
+    return out;
+  }
+  var shared = parseShared(location.hash);
+  if (shared) { Object.assign(cfg, shared); save(); say('Réglages importés'); }
+  else if (shared === null) say('Lien de réglages invalide');
+  if (shared !== undefined) {
+    try { history.replaceState(null, '', location.pathname + location.search); } catch (e) {}
+  }
+  $('share').onclick = function () {
+    var url = shareUrl();
+    function copy() {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url).then(function () { say('Lien copié'); }, function () { say('Copiez ce lien : ' + url); });
+      } else {
+        say('Copiez ce lien : ' + url);
+      }
+    }
+    if (navigator.share) {
+      navigator.share({ title: 'Respiration lente', text: 'Mes réglages de respiration', url: url }).catch(function (err) {
+        if (err && err.name === 'AbortError') return;
+        copy();
+      });
+    } else {
+      copy();
+    }
+  };
 
   // ---------- Historique et statistiques ----------
 

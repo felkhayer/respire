@@ -21,6 +21,7 @@ Accédez simplement à [https://felkhayer.github.io/respire/](https://felkhayer.
 - **Guidage visuel et sonore** : Animation circulaire et sons pour l'inspiration/expiration
 - **Personnalisable** : Réglage des durées d'inspiration, expiration, et pauses
 - **Préréglages** : 4-6, 5-5, 4-7-8, Carré 4
+- **Partage des réglages** : bouton « Partager ces réglages » qui produit un lien (`…#r=4,0,6,0,5`) ; ouvert, le lien applique les réglages reçus
 - **Thème clair/sombre** : Adaptation automatique ou manuelle
 - **Fonctionne en arrière-plan** : Le son continue même écran éteint
 - **Mode hors ligne** : Pas de connexion internet requise après installation

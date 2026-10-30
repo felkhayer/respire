@@ -155,6 +155,14 @@ const MUTANTS = [
   // --- Mode guidé ---
 
   // --- Partage ---
+  ['share-nobound', H, 'out[k] = Math.max(f.min, Math.min(f.max, v));', 'out[k] = v;'],
+  ['share-noround', H, 'v = Math.round(v / step) * step;', ''],
+  ['share-nosave', H, 'Object.assign(cfg, shared); save();', 'Object.assign(cfg, shared);'],
+  ['share-noreplace', H, "try { history.replaceState(null, '', location.pathname + location.search); } catch (e) {}", ''],
+  ['share-abort-error', H, "if (err && err.name === 'AbortError') return;", "if (err && err.name === 'NotAllowedError') return;"],
+  ['share-keyorder', H, "var SHARE_KEYS = ['inh', 'hold1', 'exh', 'hold2', 'total'];", "var SHARE_KEYS = ['inh', 'exh', 'hold1', 'hold2', 'total'];"],
+  ['share-length', H, 'if (parts.length !== SHARE_KEYS.length) return null;', ''],
+  ['share-nonfinite', H, 'if (!isFinite(v)) return null;', ''],
 
   // --- Historique et statistiques ---
 
