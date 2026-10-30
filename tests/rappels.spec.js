@@ -111,7 +111,9 @@ test.describe('Rappels', () => {
   test('les lignes longues sont repliées à 75 caractères et l’URL ne contient pas le fragment', async ({ app, page }) => {
     await openAt(app, page, T_0730);
     const long = '/index.html?x=' + 'a'.repeat(150);
-    await page.goto(long + '#r=4,0,6,0,5');
+    // Fragment sans rapport avec le partage : il reste dans l'adresse (un lien #r=… est retiré au chargement).
+    await page.goto(long + '#autre');
+    expect(await page.evaluate(() => location.hash)).toBe('#autre');
     await openPanel(page);
     const { text, lines } = await download(page);
     for (const l of lines) expect(l.length).toBeLessThanOrEqual(75);
