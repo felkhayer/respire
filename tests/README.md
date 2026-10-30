@@ -33,6 +33,7 @@ npm run test:mutation             # vérifie que la suite détecte les régressi
 | `rappels.spec.js` | Rappel quotidien : fichier `.ics` téléchargé (champs, CRLF, repliement), premier créneau aujourd'hui / demain (horloge simulée), mémorisation de l'heure (valeur invalide, stockage interdit), accessibilité |
 | `historique.spec.js` | Historique : enregistrement (≥ 30 s, fin automatique), persistance, limite de 500, stockage corrompu / interdit, liste des 10 dernières, effacement confirmé ou annulé |
 | `statistiques.spec.js` | Statistiques : totaux, 7 derniers jours, série (aujourd'hui / hier / trou / même jour), 14 barres et hauteurs, `aria-label`, état vide, mise à jour (séance, effacement, minuit), limites de jour et changement d'heure (Europe/Paris) |
+| `internationalisation.spec.js` | Français / anglais : détection (`fr-FR`, `fr-CA`, `en-US`, `de-DE`), préférence enregistrée (prioritaire, persistante, invalide, stockage interdit), interface anglaise complète (ARIA, phases, « Done »), changement en cours de séance, séparateur décimal, dates (`Intl`), pluriels, `.ics`, messages, 320 px, parité des dictionnaires |
 | `pwa-manifest.spec.js` | `manifest.json`, icônes (dimensions réelles), métadonnées de `index.html` |
 | `pwa-service-worker.spec.js` | Logique de `sw.js` (install / activate / fetch) en isolation |
 | `pwa-hors-ligne.spec.js` | Vrai service worker : rechargement et utilisation sans réseau |
@@ -77,6 +78,8 @@ Après l'ajout d'une fonctionnalité, ajoutez quelques mutants qui la cassent et
   Options d'`open` : `storage`, `storageBroken`, `audio` (`standard` | `webkit` | `none`),
   `audioState`, `wakeLock` (`ok` | `reject` | `absent`), `noSleep`.
 - Le serveur statique (`helpers/server.js`) est lancé automatiquement par Playwright.
+- **Langue** : `playwright.config.js` fixe `locale: 'fr-FR'`, car les tests décrivent l'interface française
+  (la langue est détectée via `navigator.language`). Pour l'anglais : `test.use({ locale: 'en-US' })`.
 
 ## Ajouter une fonctionnalité
 

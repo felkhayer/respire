@@ -200,13 +200,17 @@ body[data-phase="h1"] .disc, body[data-phase="h2"] .disc { background: var(--hol
   background: var(--btn-bg); color: var(--btn-ink); font: inherit; font-size: 16px; font-weight: 600; cursor: pointer;
 }
 
+/* ---------- Internationalisation ---------- */
+.langs { display: flex; gap: 8px; }
+.langs .chip { min-width: 44px; min-height: 44px; padding: 0 12px; font-weight: 600; }
+
 @media (prefers-reduced-motion: reduce) { .disc, #phase, svg { transition: none; } }
 </style>
 </head>
 <body data-phase="idle">
 <main>
-  <h1>Respiration lente</h1>
-  <div id="phase">Prêt</div>
+  <h1 data-i18n="appTitle"></h1>
+  <div id="phase"></div>
 
   <div class="dial">
     <svg viewBox="0 0 300 300" aria-hidden="true">
@@ -218,58 +222,65 @@ body[data-phase="h1"] .disc, body[data-phase="h2"] .disc { background: var(--hol
     <div id="count">4</div>
   </div>
 
-  <button id="go" type="button">Démarrer</button>
-  <div class="stats"><span>Cycles : <b id="cycles">0</b></span><span>Durée : <b id="elapsed">0:00</b></span></div>
+  <button id="go" type="button"></button>
+  <div class="stats"><span><span data-i18n="cyclesLbl"></span> <b id="cycles">0</b></span><span><span data-i18n="durationLbl"></span> <b id="elapsed">0:00</b></span></div>
   <p class="status" id="status" role="status" aria-live="polite"></p>
 
   <section class="panel">
     <div class="chips" id="chips"></div>
     <div id="rows"></div>
     <div class="row">
-      <span class="lbl" id="soundlbl">Guide sonore</span>
+      <span class="lbl" id="langlbl" data-i18n="language"></span>
+      <div class="langs" role="group" aria-labelledby="langlbl">
+        <button type="button" class="chip" data-lang="fr" lang="fr" title="Français">FR</button>
+        <button type="button" class="chip" data-lang="en" lang="en" title="English">EN</button>
+      </div>
+    </div>
+    <div class="row">
+      <span class="lbl" id="soundlbl" data-i18n="sound"></span>
       <button class="switch" id="sound" role="switch" aria-checked="true" aria-labelledby="soundlbl"></button>
     </div>
-    <p class="hint">Le son monte d'une octave pendant l'inspiration et redescend pendant l'expiration : plus il est aigu, plus les poumons sont pleins. Les pauses gardent la même note, plus douce.</p>
+    <p class="hint" data-i18n="hint"></p>
   </section>
 
   <!-- ---------- Mode guidé ---------- -->
   <section class="guide" aria-labelledby="guidettl">
-    <h2 id="guidettl">Mode guidé</h2>
+    <h2 id="guidettl" data-i18n="guideTitle"></h2>
     <div class="seqs" id="seqs"></div>
-    <p class="ghint">Chaque séquence enchaîne plusieurs rythmes ; le changement a lieu à la fin d'un cycle. Choisir un préréglage ou modifier un réglage quitte le mode guidé.</p>
+    <p class="ghint" data-i18n="guideHint"></p>
   </section>
 
   <!-- ---------- Partage ---------- -->
-  <div class="share"><button id="share" class="chip" type="button">Partager ces réglages</button></div>
+  <div class="share"><button id="share" class="chip" type="button" data-i18n="share"></button></div>
 
   <!-- ---------- Historique et statistiques ---------- -->
   <details class="history" id="history">
-    <summary>Historique</summary>
+    <summary data-i18n="history"></summary>
     <section class="progress" id="stats" aria-labelledby="stats-title" hidden>
-      <h3 id="stats-title">Progression</h3>
+      <h3 id="stats-title" data-i18n="progress"></h3>
       <dl class="stats-grid">
-        <div class="stat"><dt>Séances</dt><dd id="stat-sessions"></dd></div>
-        <div class="stat"><dt>Minutes</dt><dd id="stat-minutes"></dd></div>
-        <div class="stat"><dt>Série</dt><dd id="stat-streak"></dd></div>
-        <div class="stat"><dt>7 derniers jours</dt><dd id="stat-week"></dd></div>
+        <div class="stat"><dt data-i18n="sessions"></dt><dd id="stat-sessions"></dd></div>
+        <div class="stat"><dt data-i18n="minutes"></dt><dd id="stat-minutes"></dd></div>
+        <div class="stat"><dt data-i18n="streak"></dt><dd id="stat-streak"></dd></div>
+        <div class="stat"><dt data-i18n="week"></dt><dd id="stat-week"></dd></div>
       </dl>
       <svg id="stats-chart" viewBox="0 0 280 64" role="img" aria-label=""></svg>
       <div class="stats-axis" aria-hidden="true"><span id="stats-from"></span><span id="stats-to"></span></div>
     </section>
     <ul id="history-list"></ul>
-    <p class="empty" id="history-empty">Aucune séance enregistrée</p>
-    <button type="button" id="clear-history">Effacer l’historique</button>
+    <p class="empty" id="history-empty" data-i18n="noSessions"></p>
+    <button type="button" id="clear-history" data-i18n="clearHistory"></button>
   </details>
 
   <!-- ---------- Rappels ---------- -->
   <details class="reminder" id="reminder">
-    <summary>Rappel quotidien</summary>
+    <summary data-i18n="reminder"></summary>
     <div class="row">
-      <label for="remtime">Heure du rappel</label>
+      <label for="remtime" data-i18n="remTime"></label>
       <input type="time" id="remtime" value="08:00" required>
     </div>
-    <button type="button" class="action" id="remadd">Ajouter à mon agenda</button>
-    <p class="rem-help">Le rappel est confié à l’agenda de votre téléphone : aucun serveur, aucune donnée ne quitte l’appareil, et cela fonctionne hors ligne.</p>
+    <button type="button" class="action" id="remadd" data-i18n="remAdd"></button>
+    <p class="rem-help" data-i18n="remHelp"></p>
   </details>
 
 </main>
@@ -292,20 +303,134 @@ body[data-phase="h1"] .disc, body[data-phase="h2"] .disc { background: var(--hol
   var listeners = {};
   function on(name, fn) { (listeners[name] = listeners[name] || []).push(fn); }
   function emit(name, data) { (listeners[name] || []).forEach(function (fn) { fn(data); }); }
-  // Message bref annoncé aux lecteurs d'écran (zone role="status").
-  function say(msg) { $('status').textContent = msg; }
+  // Message bref annoncé aux lecteurs d'écran (zone role="status") : clé du dictionnaire et paramètres.
+  // Le dernier message est retenu pour être retraduit si la langue change.
+  var lastSay = null;
+  function say(key, params) { lastSay = [key, params]; $('status').textContent = t(key, params); }
 
-  function fmt(n) { return String(n).replace('.', ',') + ' s'; }
+  // ---------- Internationalisation ----------
+  // Le français est la langue de référence. Une valeur tableau est un pluriel [singulier, pluriel],
+  // choisi par PLURAL selon le paramètre n. « {nom} » est remplacé par le paramètre du même nom.
+  var I18N = {
+    fr: {
+      appTitle: 'Respiration lente',
+      start: 'Démarrer', stop: 'Arrêter', ready: 'Prêt', done: 'Terminé',
+      ph_in: 'Inspirez', ph_h1: 'Retenez', ph_out: 'Expirez', ph_h2: 'Pause',
+      cyclesLbl: 'Cycles :', durationLbl: 'Durée :',
+      f_inh: 'Inspiration', f_hold1: 'Pause poumons pleins', f_exh: 'Expiration', f_hold2: 'Pause poumons vides',
+      f_total: 'Durée de l’exercice',
+      less: 'Diminuer : {x}', more: 'Augmenter : {x}',
+      unlimited: 'Illimitée', square4: 'Carrée 4', decSep: ',',
+      language: 'Langue', sound: 'Guide sonore',
+      hint: "Le son monte d'une octave pendant l'inspiration et redescend pendant l'expiration : plus il est aigu, plus les poumons sont pleins. Les pauses gardent la même note, plus douce.",
+      guideTitle: 'Mode guidé',
+      guideHint: "Chaque séquence enchaîne plusieurs rythmes ; le changement a lieu à la fin d'un cycle. Choisir un préréglage ou modifier un réglage quitte le mode guidé.",
+      g_detente: 'Détente', g_sommeil: 'Endormissement', g_concentration: 'Concentration',
+      step: 'Étape {i} / {n} · {name}',
+      share: 'Partager ces réglages', shareText: 'Mes réglages de respiration',
+      imported: 'Réglages importés', badLink: 'Lien de réglages invalide',
+      copied: 'Lien copié', copyThis: 'Copiez ce lien : {url}',
+      history: 'Historique', progress: 'Progression',
+      sessions: 'Séances', minutes: 'Minutes', streak: 'Série', week: '7 derniers jours',
+      noSessions: 'Aucune séance enregistrée', clearHistory: 'Effacer l’historique',
+      confirmClear: 'Effacer tout l’historique des séances ?', cleared: 'Historique effacé',
+      cycles: ['{n} cycle', '{n} cycles'], days: ['{n} jour', '{n} jours'],
+      chart: 'Minutes de pratique par jour sur 14 jours : {list} ; aujourd’hui {today} min',
+      reminder: 'Rappel quotidien', remTime: 'Heure du rappel', remAdd: 'Ajouter à mon agenda',
+      remHelp: 'Le rappel est confié à l’agenda de votre téléphone : aucun serveur, aucune donnée ne quitte l’appareil, et cela fonctionne hors ligne.',
+      remDone: 'Rappel téléchargé : ouvrez le fichier pour l’ajouter à votre agenda',
+      icsDesc: 'Prenez dix minutes pour respirer lentement, sans écran.', icsFile: 'respirer-rappel.ics'
+    },
+    en: {
+      appTitle: 'Slow breathing',
+      start: 'Start', stop: 'Stop', ready: 'Ready', done: 'Done',
+      ph_in: 'Breathe in', ph_h1: 'Hold', ph_out: 'Breathe out', ph_h2: 'Rest',
+      cyclesLbl: 'Cycles:', durationLbl: 'Time:',
+      f_inh: 'Inhale', f_hold1: 'Hold, lungs full', f_exh: 'Exhale', f_hold2: 'Hold, lungs empty',
+      f_total: 'Session length',
+      less: 'Decrease: {x}', more: 'Increase: {x}',
+      unlimited: 'Unlimited', square4: 'Square 4', decSep: '.',
+      language: 'Language', sound: 'Sound guide',
+      hint: 'The tone rises by an octave as you breathe in and falls back as you breathe out: the higher it is, the fuller your lungs. Pauses keep the same, softer note.',
+      guideTitle: 'Guided mode',
+      guideHint: 'Each sequence chains several rhythms; the change happens at the end of a cycle. Choosing a preset or changing a setting leaves guided mode.',
+      g_detente: 'Relax', g_sommeil: 'Sleep', g_concentration: 'Focus',
+      step: 'Step {i} / {n} · {name}',
+      share: 'Share these settings', shareText: 'My breathing settings',
+      imported: 'Settings imported', badLink: 'Invalid settings link',
+      copied: 'Link copied', copyThis: 'Copy this link: {url}',
+      history: 'History', progress: 'Progress',
+      sessions: 'Sessions', minutes: 'Minutes', streak: 'Streak', week: 'Last 7 days',
+      noSessions: 'No sessions recorded yet', clearHistory: 'Clear history',
+      confirmClear: 'Clear the whole session history?', cleared: 'History cleared',
+      cycles: ['{n} cycle', '{n} cycles'], days: ['{n} day', '{n} days'],
+      chart: 'Practice minutes per day over 14 days: {list}; today {today} min',
+      reminder: 'Daily reminder', remTime: 'Reminder time', remAdd: 'Add to my calendar',
+      remHelp: 'The reminder is handed to your phone’s calendar: no server, no data leaves the device, and it works offline.',
+      remDone: 'Reminder downloaded: open the file to add it to your calendar',
+      icsDesc: 'Take ten minutes to breathe slowly, away from screens.', icsFile: 'breathing-reminder.ics'
+    }
+  };
+  // Index de la forme : 0 singulier, 1 pluriel (en français, 0 et 1 sont au singulier).
+  var PLURAL = {
+    fr: function (n) { return n < 2 ? 0 : 1; },
+    en: function (n) { return n === 1 ? 0 : 1; }
+  };
+  // Préférence dans sa propre clé : la config des réglages (respiration-cfg) et le lien de partage
+  // ne dépendent pas de la langue.
+  var LANG_KEY = 'respiration-lang';
+  function loadLang() {
+    try { var s = localStorage.getItem(LANG_KEY); if (I18N.hasOwnProperty(s)) return s; } catch (e) {}
+    return /^fr(-|$)/i.test(navigator.language || '') ? 'fr' : 'en';
+  }
+  var lang = loadLang();
+  function t(key, params) {
+    var v = I18N[lang].hasOwnProperty(key) ? I18N[lang][key] : I18N.fr[key];
+    if (Array.isArray(v)) v = v[PLURAL[lang](params.n)];
+    return String(v).replace(/\{(\w+)\}/g, function (m, k) { return params && k in params ? params[k] : m; });
+  }
+  // Nombre avec le séparateur décimal de la langue : 4,5 / 4.5.
+  function num(n) { return String(n).replace('.', t('decSep')); }
+  // Locale des dates : celle du navigateur si elle est de la langue choisie (en-GB, fr-CA…), sinon la langue.
+  function locale() {
+    var n = navigator.language || '';
+    return n.toLowerCase().indexOf(lang) === 0 ? n : lang;
+  }
+  function translatePage() {
+    document.documentElement.lang = lang;
+    document.title = t('appTitle');
+    Array.prototype.forEach.call(document.querySelectorAll('[data-i18n]'), function (el) {
+      el.textContent = t(el.getAttribute('data-i18n'));
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('[data-lang]'), function (b) {
+      b.setAttribute('aria-pressed', b.getAttribute('data-lang') === lang ? 'true' : 'false');
+    });
+  }
+  // Changement immédiat, sans rechargement : chaque partie de l'interface s'abonne à on('lang').
+  function setLang(l) {
+    lang = l;
+    try { localStorage.setItem(LANG_KEY, l); } catch (e) {}
+    translatePage();
+    emit('lang');
+  }
+  Array.prototype.forEach.call(document.querySelectorAll('[data-lang]'), function (b) {
+    b.onclick = function () { setLang(b.getAttribute('data-lang')); };
+  });
+  translatePage();
+  on('lang', function () { if (lastSay) say(lastSay[0], lastSay[1]); });
 
+  function fmt(n) { return num(n) + ' s'; }
+
+  // Libellés : t('f_' + k).
   var FIELDS = [
-    { k: 'inh',   label: 'Inspiration',          min: 1, max: 30 },
-    { k: 'hold1', label: 'Pause poumons pleins', min: 0, max: 30 },
-    { k: 'exh',   label: 'Expiration',           min: 1, max: 30 },
-    { k: 'hold2', label: 'Pause poumons vides',  min: 0, max: 30 },
-    { k: 'total', label: 'Durée de l\u2019exercice', min: 0, max: 60, step: 1, unit: 'min' }
+    { k: 'inh',   min: 1, max: 30 },
+    { k: 'hold1', min: 0, max: 30 },
+    { k: 'exh',   min: 1, max: 30 },
+    { k: 'hold2', min: 0, max: 30 },
+    { k: 'total', min: 0, max: 60, step: 1, unit: 'min' }
   ];
   function fmtField(f) {
-    if (f.k === 'total') return cfg.total === 0 ? 'Illimitée' : cfg.total + ' min';
+    if (f.k === 'total') return cfg.total === 0 ? t('unlimited') : cfg.total + ' min';
     return fmt(cfg[f.k]);
   }
   function totalSuffix() { return cfg.total > 0 ? ' / ' + cfg.total + ':00' : ''; }
@@ -313,18 +438,21 @@ body[data-phase="h1"] .disc, body[data-phase="h2"] .disc { background: var(--hol
     { n: '4 – 6',   v: { inh: 4, hold1: 0, exh: 6, hold2: 0 } },
     { n: '5 – 5',   v: { inh: 5, hold1: 0, exh: 5, hold2: 0 } },
     { n: '4 – 7 – 8', v: { inh: 4, hold1: 7, exh: 8, hold2: 0 } },
-    { n: 'Carrée 4',  v: { inh: 4, hold1: 4, exh: 4, hold2: 4 } }
+    { key: 'square4', v: { inh: 4, hold1: 4, exh: 4, hold2: 4 } }
   ];
+  // Nom affiché d'un préréglage ou d'une étape guidée : traduit s'il a une clé, sinon le rythme tel quel.
+  function presetName(p) { return p.key ? t(p.key) : p.n; }
 
   // ---------- Réglages ----------
   var rowsEl = $('rows'), chipsEl = $('chips'), outputs = {};
   FIELDS.forEach(function (f) {
     var row = document.createElement('div'); row.className = 'row';
-    var lab = document.createElement('span'); lab.className = 'lbl'; lab.textContent = f.label;
+    var lab = document.createElement('span'); lab.className = 'lbl';
     var step = document.createElement('div'); step.className = 'step';
-    var minus = document.createElement('button'); minus.type = 'button'; minus.textContent = '−'; minus.setAttribute('aria-label', 'Diminuer : ' + f.label);
+    var minus = document.createElement('button'); minus.type = 'button'; minus.textContent = '−';
     var out = document.createElement('output'); outputs[f.k] = out;
-    var plus = document.createElement('button'); plus.type = 'button'; plus.textContent = '+'; plus.setAttribute('aria-label', 'Augmenter : ' + f.label);
+    var plus = document.createElement('button'); plus.type = 'button'; plus.textContent = '+';
+    f.lab = lab; f.minus = minus; f.plus = plus;
     minus.onclick = function () { setVal(f, cfg[f.k] - (f.step || 0.5)); };
     plus.onclick = function () { setVal(f, cfg[f.k] + (f.step || 0.5)); };
     step.append(minus, out, plus); row.append(lab, step); rowsEl.appendChild(row);
@@ -333,10 +461,22 @@ body[data-phase="h1"] .disc, body[data-phase="h2"] .disc { background: var(--hol
   function setVal(f, v) { leaveGuide(); cfg[f.k] = Math.min(f.max, Math.max(f.min, v)); save(); renderSettings(); if (running) schedule(); }
 
   PRESETS.forEach(function (p) {
-    var b = document.createElement('button'); b.type = 'button'; b.className = 'chip'; b.textContent = p.n;
+    var b = document.createElement('button'); b.type = 'button'; b.className = 'chip';
     b.onclick = function () { leaveGuide(); Object.assign(cfg, p.v); save(); renderSettings(); if (running) schedule(); };
     p.el = b; chipsEl.appendChild(b);
   });
+  // Libellés traduits des réglages (visibles et ARIA) et des préréglages.
+  function renderLabels() {
+    FIELDS.forEach(function (f) {
+      var label = t('f_' + f.k);
+      f.lab.textContent = label;
+      f.minus.setAttribute('aria-label', t('less', { x: label }));
+      f.plus.setAttribute('aria-label', t('more', { x: label }));
+    });
+    PRESETS.forEach(function (p) { p.el.textContent = presetName(p); });
+  }
+  renderLabels();
+  on('lang', function () { renderLabels(); renderSettings(); });
 
   function renderSettings() {
     FIELDS.forEach(function (f) { outputs[f.k].textContent = fmtField(f); });
@@ -347,7 +487,7 @@ body[data-phase="h1"] .disc, body[data-phase="h2"] .disc { background: var(--hol
       p.el.setAttribute('aria-pressed', on ? 'true' : 'false');
     });
     $('sound').setAttribute('aria-checked', cfg.sound ? 'true' : 'false');
-    if (!running) $('count').textContent = String(cfg.inh).replace('.', ',');
+    if (!running) $('count').textContent = num(cfg.inh);
   }
 
   $('sound').onclick = function () {
@@ -359,10 +499,11 @@ body[data-phase="h1"] .disc, body[data-phase="h2"] .disc { background: var(--hol
   // r : rythme { inh, hold1, exh, hold2 } du cycle (par défaut les réglages ; voir cycleList pour le mode guidé).
   function phases(r) {
     r = r || cfg;
-    var p = [{ k: 'in', n: 'Inspirez', d: r.inh }];
-    if (r.hold1 > 0) p.push({ k: 'h1', n: 'Retenez', d: r.hold1 });
-    p.push({ k: 'out', n: 'Expirez', d: r.exh });
-    if (r.hold2 > 0) p.push({ k: 'h2', n: 'Pause', d: r.hold2 });
+    // Nom affiché : t('ph_' + k), au rendu (il suit donc la langue).
+    var p = [{ k: 'in', d: r.inh }];
+    if (r.hold1 > 0) p.push({ k: 'h1', d: r.hold1 });
+    p.push({ k: 'out', d: r.exh });
+    if (r.hold2 > 0) p.push({ k: 'h2', d: r.hold2 });
     return p;
   }
   function levelOf(ph, prog) {
@@ -469,6 +610,7 @@ body[data-phase="h1"] .disc, body[data-phase="h2"] .disc { background: var(--hol
   });
 
   // ---------- Boucle ----------
+  var idle = 'ready'; // texte de la phase hors séance : 'ready' (Prêt) ou 'done' (Terminé)
   var running = false, hasRun = false, cur = 'in', phaseStart = 0, startedAt = 0, cycles = 0;
   var cycleStart = 0; // début (ms) du cycle en cours : fixe le rythme du cycle en mode guidé
   var C = 2 * Math.PI * 140;
@@ -477,7 +619,7 @@ body[data-phase="h1"] .disc, body[data-phase="h2"] .disc { background: var(--hol
   function render(ph, prog, now) {
     var level = levelOf(ph, prog);
     document.body.setAttribute('data-phase', ph.k);
-    $('phase').textContent = ph.n;
+    $('phase').textContent = t('ph_' + ph.k);
     disc.style.transform = 'scale(' + (0.5 + 0.5 * level).toFixed(4) + ')';
     arc.style.strokeDashoffset = (C * (1 - prog)).toFixed(2);
     var a = -Math.PI / 2 + 2 * Math.PI * prog;
@@ -526,7 +668,7 @@ body[data-phase="h1"] .disc, body[data-phase="h2"] .disc { background: var(--hol
     if (cfg.sound) initAudio();
     running = true; hasRun = true; cur = 'in'; cycles = 0;
     cycleStart = phaseStart = startedAt = performance.now();
-    $('go').textContent = 'Arrêter';
+    $('go').textContent = t('stop');
     getLock();
     schedule();
     clearInterval(refillTimer);
@@ -539,8 +681,9 @@ body[data-phase="h1"] .disc, body[data-phase="h2"] .disc { background: var(--hol
     running = false;
     clearInterval(refillTimer);
     stopAudio(); releaseLock();
-    $('go').textContent = 'Démarrer';
-    $('phase').textContent = done === true ? 'Terminé' : 'Prêt';
+    $('go').textContent = t('start');
+    idle = done === true ? 'done' : 'ready';
+    $('phase').textContent = t(idle);
     if (done === true) $('elapsed').textContent = cfg.total + ':00' + totalSuffix();
     document.body.setAttribute('data-phase', 'idle');
     disc.style.transform = 'scale(.5)';
@@ -554,6 +697,13 @@ body[data-phase="h1"] .disc, body[data-phase="h2"] .disc { background: var(--hol
     });
   }
   $('go').onclick = function () { running ? stop(false) : start(); };
+  // Bouton principal et phase affichée, y compris pendant une séance (sans attendre l'image suivante).
+  function renderMain() {
+    $('go').textContent = t(running ? 'stop' : 'start');
+    $('phase').textContent = t(running ? 'ph_' + cur : idle);
+  }
+  renderMain();
+  on('lang', renderMain);
 
   // ---------- Mode guidé ----------
   // Une séquence enchaîne plusieurs rythmes, chacun pendant `min` minutes. Le rythme change à la fin
@@ -562,18 +712,19 @@ body[data-phase="h1"] .disc, body[data-phase="h2"] .disc { background: var(--hol
   // affichent le rythme en vigueur (copié dans cfg) et la durée de la séquence.
   function rh(inh, hold1, exh, hold2) { return { inh: inh, hold1: hold1, exh: exh, hold2: hold2 }; }
   var GUIDES = [
-    { id: 'detente', n: 'Détente', steps: [
+    { id: 'detente', steps: [
       { n: '4 – 4', min: 1, v: rh(4, 0, 4, 0) },
       { n: '4 – 6', min: 2, v: rh(4, 0, 6, 0) },
       { n: '4 – 8', min: 3, v: rh(4, 0, 8, 0) }] },
-    { id: 'sommeil', n: 'Endormissement', steps: [
+    { id: 'sommeil', steps: [
       { n: '4 – 6', min: 2, v: rh(4, 0, 6, 0) },
       { n: '4 – 7 – 8', min: 8, v: rh(4, 7, 8, 0) }] },
-    { id: 'concentration', n: 'Concentration', steps: [
+    { id: 'concentration', steps: [
       { n: '5 – 5', min: 2, v: rh(5, 0, 5, 0) },
-      { n: 'Carrée 4', min: 6, v: rh(4, 4, 4, 4) },
+      { key: 'square4', min: 6, v: rh(4, 4, 4, 4) },
       { n: '5 – 5', min: 2, v: rh(5, 0, 5, 0) }] }
   ];
+  // Nom affiché : t('g_' + id).
   GUIDES.forEach(function (g) { g.total = g.steps.reduce(function (s, st) { return s + st.min; }, 0); });
 
   function guide() {
@@ -608,7 +759,7 @@ body[data-phase="h1"] .disc, body[data-phase="h2"] .disc { background: var(--hol
       ['inh', 'hold1', 'exh', 'hold2'].forEach(function (k) { if (cfg[k] !== st.v[k]) { cfg[k] = st.v[k]; changed = true; } });
       if (cfg.total !== g.total) { cfg.total = g.total; changed = true; }
       if (changed) renderSettings();
-      if (running) text = 'Étape ' + (i + 1) + ' / ' + g.steps.length + ' · ' + st.n;
+      if (running) text = t('step', { i: i + 1, n: g.steps.length, name: presetName(st) });
     }
     if (gstep.textContent !== text) gstep.textContent = text;
   }
@@ -616,9 +767,6 @@ body[data-phase="h1"] .disc, body[data-phase="h2"] .disc { background: var(--hol
   var seqsEl = $('seqs');
   GUIDES.forEach(function (g) {
     var b = document.createElement('button'); b.type = 'button'; b.className = 'seq';
-    var detail = document.createElement('small');
-    detail.textContent = g.steps.map(function (st) { return st.n + ' (' + st.min + ' min)'; }).join(' → ') + ' · ' + g.total + ' min';
-    b.append(g.n, ' ', detail);
     b.onclick = function () {
       if (cfg.guide === g.id) delete cfg.guide; else cfg.guide = g.id; // un second appui quitte le mode guidé
       guideFrame(); save(); renderSettings(); renderGuide();
@@ -626,6 +774,16 @@ body[data-phase="h1"] .disc, body[data-phase="h2"] .disc { background: var(--hol
     };
     g.el = b; seqsEl.appendChild(b);
   });
+  function renderGuideLabels() {
+    GUIDES.forEach(function (g) {
+      var detail = document.createElement('small');
+      detail.textContent = g.steps.map(function (st) { return presetName(st) + ' (' + st.min + ' min)'; }).join(' → ') + ' · ' + g.total + ' min';
+      g.el.textContent = '';
+      g.el.append(t('g_' + g.id), ' ', detail);
+    });
+  }
+  renderGuideLabels();
+  on('lang', function () { renderGuideLabels(); guideFrame(); });
   function renderGuide() {
     var sel = guide();
     GUIDES.forEach(function (g) { g.el.setAttribute('aria-pressed', g === sel ? 'true' : 'false'); });
@@ -661,8 +819,8 @@ body[data-phase="h1"] .disc, body[data-phase="h2"] .disc { background: var(--hol
     return out;
   }
   var shared = parseShared(location.hash);
-  if (shared) { Object.assign(cfg, shared); save(); say('Réglages importés'); }
-  else if (shared === null) say('Lien de réglages invalide');
+  if (shared) { Object.assign(cfg, shared); save(); say('imported'); }
+  else if (shared === null) say('badLink');
   if (shared !== undefined) {
     try { history.replaceState(null, '', location.pathname + location.search); } catch (e) {}
   }
@@ -670,13 +828,13 @@ body[data-phase="h1"] .disc, body[data-phase="h2"] .disc { background: var(--hol
     var url = shareUrl();
     function copy() {
       if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(url).then(function () { say('Lien copié'); }, function () { say('Copiez ce lien : ' + url); });
+        navigator.clipboard.writeText(url).then(function () { say('copied'); }, function () { say('copyThis', { url: url }); });
       } else {
-        say('Copiez ce lien : ' + url);
+        say('copyThis', { url: url });
       }
     }
     if (navigator.share) {
-      navigator.share({ title: 'Respiration lente', text: 'Mes réglages de respiration', url: url }).catch(function (err) {
+      navigator.share({ title: t('appTitle'), text: t('shareText'), url: url }).catch(function (err) {
         if (err && err.name === 'AbortError') return;
         copy();
       });
@@ -715,14 +873,19 @@ body[data-phase="h1"] .disc, body[data-phase="h2"] .disc { background: var(--hol
     renderHistory();
   });
   function entryLabel(e) {
-    for (var i = 0; i < GUIDES.length; i++) if (GUIDES[i].id === e.g) return GUIDES[i].n;
+    for (var i = 0; i < GUIDES.length; i++) if (GUIDES[i].id === e.g) return t('g_' + e.g);
     return fmtRhythm(e.r);
   }
   function fmtRhythm(r) {
-    return r.filter(function (v, i) { return i === 0 || i === 2 || v > 0; })
-      .map(function (v) { return String(v).replace('.', ','); }).join(' – ');
+    return r.filter(function (v, i) { return i === 0 || i === 2 || v > 0; }).map(num).join(' – ');
   }
-  var dateFmt = new Intl.DateTimeFormat('fr-FR', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+  // Formats de date de la langue courante (recréés au changement de langue).
+  var dateFmt, shortDate;
+  function makeDateFormats() {
+    dateFmt = new Intl.DateTimeFormat(locale(), { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+    shortDate = new Intl.DateTimeFormat(locale(), { day: 'numeric', month: 'short' });
+  }
+  makeDateFormats();
   // Statistiques : jours identifiés par (année, mois, jour) locaux, jamais par division de millisecondes
   // (un jour de changement d'heure dure 23 h ou 25 h).
   function dayKey(date) { return date.getFullYear() * 10000 + date.getMonth() * 100 + date.getDate(); }
@@ -748,14 +911,13 @@ body[data-phase="h1"] .disc, body[data-phase="h2"] .disc { background: var(--hol
     };
   }
   var SVG_NS = 'http://www.w3.org/2000/svg';
-  var shortDate = new Intl.DateTimeFormat('fr-FR', { day: 'numeric', month: 'short' });
   function renderStats(h) {
     $('stats').hidden = h.length === 0;
     if (h.length === 0) return;
     var st = computeStats(h, new Date());
     $('stat-sessions').textContent = st.sessions;
     $('stat-minutes').textContent = st.minutes;
-    $('stat-streak').textContent = st.streak + (st.streak > 1 ? ' jours' : ' jour');
+    $('stat-streak').textContent = t('days', { n: st.streak });
     $('stat-week').textContent = st.week + ' min';
     var svg = $('stats-chart'), max = Math.max.apply(null, st.perDay), labels = [];
     svg.textContent = '';
@@ -769,8 +931,7 @@ body[data-phase="h1"] .disc, body[data-phase="h2"] .disc { background: var(--hol
       svg.appendChild(r);
       labels.push(Math.round(m));
     });
-    svg.setAttribute('aria-label', 'Minutes de pratique par jour sur 14 jours : ' + labels.join(', ') +
-      ' ; aujourd’hui ' + labels[13] + ' min');
+    svg.setAttribute('aria-label', t('chart', { list: labels.join(', '), today: labels[13] }));
     $('stats-from').textContent = shortDate.format(st.first);
     $('stats-to').textContent = shortDate.format(st.last);
   }
@@ -785,19 +946,20 @@ body[data-phase="h1"] .disc, body[data-phase="h2"] .disc { background: var(--hol
       var when = document.createElement('span'); when.className = 'when'; when.textContent = dateFmt.format(new Date(e.d));
       var meta = document.createElement('span'); meta.className = 'meta';
       meta.textContent = Math.floor(e.s / 60) + ':' + String(e.s % 60).padStart(2, '0') + ' · ' +
-        e.c + (e.c > 1 ? ' cycles' : ' cycle') + ' · ' + entryLabel(e);
+        t('cycles', { n: e.c }) + ' · ' + entryLabel(e);
       li.append(when, meta); list.appendChild(li);
     });
     $('history-empty').hidden = h.length > 0;
     $('clear-history').hidden = h.length === 0;
   }
   $('clear-history').onclick = function () {
-    if (!confirm('Effacer tout l’historique des séances ?')) return;
+    if (!confirm(t('confirmClear'))) return;
     try { localStorage.removeItem(HISTORY_KEY); } catch (e) {}
     renderHistory();
-    say('Historique effacé');
+    say('cleared');
   };
   renderHistory();
+  on('lang', function () { makeDateFormats(); renderHistory(); });
 
   // ---------- Rappels ----------
   // Sans serveur, pas de notification fiable : le rappel est un fichier agenda (.ics) quotidien.
@@ -829,17 +991,17 @@ body[data-phase="h1"] .disc, body[data-phase="h2"] .disc { background: var(--hol
     var stamp = now.toISOString().replace(/[-:]/g, '').replace(/\.\d+/, '');
     var url = location.href.split('#')[0];
     return [
-      'BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Respirer//FR', 'CALSCALE:GREGORIAN',
+      'BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Respirer//' + lang.toUpperCase(), 'CALSCALE:GREGORIAN',
       'BEGIN:VEVENT',
       'UID:' + now.getTime() + '@respirer',
       'DTSTAMP:' + stamp,
       'DTSTART:' + reminderStart(now, hhmm),
       'DURATION:PT10M',
       'RRULE:FREQ=DAILY',
-      'SUMMARY:' + icsText('Respiration lente'),
-      'DESCRIPTION:' + icsText('Prenez dix minutes pour respirer lentement, sans écran.'),
+      'SUMMARY:' + icsText(t('appTitle')),
+      'DESCRIPTION:' + icsText(t('icsDesc')),
       'URL:' + url,
-      'BEGIN:VALARM', 'ACTION:DISPLAY', 'DESCRIPTION:' + icsText('Respiration lente'), 'TRIGGER:PT0M', 'END:VALARM',
+      'BEGIN:VALARM', 'ACTION:DISPLAY', 'DESCRIPTION:' + icsText(t('appTitle')), 'TRIGGER:PT0M', 'END:VALARM',
       'END:VEVENT', 'END:VCALENDAR'
     ].map(icsFold).join('\r\n') + '\r\n';
   }
@@ -851,10 +1013,10 @@ body[data-phase="h1"] .disc, body[data-phase="h2"] .disc { background: var(--hol
     var blob = new Blob([buildIcs(new Date(), hhmm)], { type: 'text/calendar;charset=utf-8' });
     var href = URL.createObjectURL(blob);
     var a = document.createElement('a');
-    a.href = href; a.download = 'respirer-rappel.ics';
+    a.href = href; a.download = t('icsFile');
     document.body.appendChild(a); a.click(); document.body.removeChild(a);
     URL.revokeObjectURL(href);
-    say('Rappel téléchargé : ouvrez le fichier pour l\u2019ajouter à votre agenda');
+    say('remDone');
   };
 
   renderSettings();

@@ -25,6 +25,7 @@ Accédez simplement à [https://felkhayer.github.io/respire/](https://felkhayer.
 - **Historique des séances** : les 10 dernières séances (date, durée, cycles, rythme), conservées sur l'appareil (500 au plus, seules les séances d'au moins 30 s), effaçables
 - **Mode guidé** : séquences qui enchaînent plusieurs rythmes (Détente, Endormissement, Concentration), étape en cours affichée, son fidèle même écran éteint
 - **Statistiques de progression** : séances et minutes cumulées, série de jours consécutifs, minutes des 7 derniers jours et graphique des 14 derniers jours (jours calculés en heure locale)
+- **Français / anglais** : langue du navigateur par défaut, sélecteur FR / EN dans les réglages (choix mémorisé, appliqué immédiatement, même pendant une séance) ; dates, nombres décimaux et rappel `.ics` suivent la langue
 - **Thème clair/sombre** : Adaptation automatique ou manuelle
 - **Fonctionne en arrière-plan** : Le son continue même écran éteint
 - **Rappel quotidien** : choisissez une heure et ajoutez un événement récurrent à l'agenda de votre téléphone (fichier `.ics`), sans serveur ni notification
@@ -73,7 +74,8 @@ python3 -m http.server 8000
 
 ### Tests de non-régression
 Une suite de tests (Playwright + Chromium) vérifie chaque fonctionnalité : réglages, préréglages,
-cycle respiratoire, durée de séance, mode guidé, guide sonore, écran allumé, thème, accessibilité et PWA hors ligne.
+cycle respiratoire, durée de séance, mode guidé, guide sonore, écran allumé, thème, accessibilité, historique,
+statistiques, partage, rappels, internationalisation et PWA hors ligne.
 ```bash
 npm install
 npx playwright install chromium   # une seule fois

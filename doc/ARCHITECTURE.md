@@ -146,6 +146,33 @@ Une séquence enchaîne plusieurs rythmes, chacun pendant une durée donnée :
   selon le temps déjà écoulé.
 - L'étape en cours (« Étape 2 / 3 · 4 – 6 ») s'affiche sous les statistiques (`aria-live="polite"`).
 
+### 5. Internationalisation (français / anglais)
+
+- **Dictionnaires** `I18N.fr` et `I18N.en` (mêmes clés) dans `index.html`, et `t(clé, paramètres)` :
+  `{nom}` est remplacé par le paramètre du même nom ; une valeur tableau `[singulier, pluriel]` est un pluriel
+  choisi par `PLURAL[lang](n)` (français : 0 et 1 au singulier, « 0 jour » ; anglais : seul 1 au singulier,
+  « 0 days »). Le français est la langue de référence : ses textes sont ceux d'avant, à l'identique.
+- **Langue** : préférence enregistrée, sinon `navigator.language` (`fr`, `fr-*` → français, tout le reste →
+  anglais). Elle est mémorisée dans une **clé dédiée `respiration-lang`** plutôt que dans `cfg` : la config des
+  réglages (`DEF`, `respiration-cfg`) et le lien de partage `#r=…` sont des formats de données indépendants de
+  la langue, et une préférence d'affichage n'a pas à voyager avec un lien de réglages. Une valeur inconnue est
+  ignorée ; un stockage interdit laisse la détection s'appliquer.
+- **Changement immédiat** : le sélecteur FR / EN (boutons `aria-pressed` du panneau de réglages) appelle
+  `setLang()`, qui retraduit les éléments `data-i18n`, `<html lang>` et `document.title`, puis émet
+  `emit('lang')`. Chaque partie s'y abonne : libellés et `aria-label` des réglages, préréglages, bouton
+  principal et phase (y compris en pleine séance, sans attendre l'image suivante), séquences et étape guidée,
+  historique et statistiques (formats de date recréés), dernier message `say()`.
+- `say(clé, paramètres)` prend désormais une clé du dictionnaire (et non plus un texte).
+- **Formats** : `num()` applique le séparateur décimal (`4,5 s` / `4.5 s`, rythme `4,5 – 6` / `4.5 – 6`) ; les
+  dates utilisent `Intl.DateTimeFormat` avec la locale du navigateur si elle est de la langue choisie (`en-GB`
+  → « 20 Oct »), sinon la langue elle-même. Le fichier `.ics` est traduit (`SUMMARY`, `DESCRIPTION`,
+  `PRODID:-//Respirer//EN`) et son nom aussi (`respirer-rappel.ics` / `breathing-reminder.ics`), puisqu'il est
+  vu par l'utilisateur.
+- **Inchangés** : le format du lien `#r=…` (point décimal), les clés et le contenu du stockage.
+- **Limite** : `manifest.json` reste en français (nom de l'application installée, description). Un manifeste
+  par langue imposerait de servir un fichier différent selon la langue, sans gain réel ici ; une fois la PWA
+  installée, son nom sur l'écran d'accueil reste « Respirer » / « Respiration lente ».
+
 ---
 
 ## 🎨 Interface Utilisateur
@@ -227,6 +254,7 @@ Une séquence enchaîne plusieurs rythmes, chacun pendant une durée donnée :
 | Accessible | ARIA, clavier, thèmes | ✅ Implémenté |
 | Multi-appareils | Design responsive | ✅ Implémenté |
 | Séquences guidées, son fidèle écran éteint | Fonction pure `stepAt()` partagée par l'affichage et le son | ✅ Implémenté |
+| Français / anglais sans rechargement | Dictionnaires + `t()`, événement `lang` | ✅ Implémenté |
 
 ---
 
@@ -260,10 +288,10 @@ et de NoSleep.js. Voir [tests/README.md](../tests/README.md).
 
 ## 🔮 Améliorations Possibles
 
-1. **Internationalisation** : Traduire en anglais et autres langues
-2. ~~**Historique** : Sauvegarder l'historique des séances~~ — **réalisé** : clé `respiration-history` (500 séances au plus, séances d'au moins 30 s), liste des 10 dernières dans un `<details>`, effacement confirmé ; `loadHistory()` / `renderHistory()` servent de base aux statistiques
-3. ~~**Statistiques** : Graphiques de progression sur le long terme~~ — **réalisé** ✅ : bloc « Progression » dans le `<details>` de l'historique (séances, minutes, série de jours, 7 derniers jours, graphique SVG de 14 barres) ; `computeStats()` identifie les jours par (année, mois, jour) locaux, donc sans erreur aux changements d'heure
-4. ✅ **Partage** : Permettre de partager ses configurations. Fait : le bouton « Partager ces réglages » construit un lien `#r=inh,hold1,exh,hold2,total` (ex. `#r=4,0,6,0,5`), partagé par `navigator.share` ou copié dans le presse-papiers ; à l'ouverture, le lien est validé, borné, appliqué puis retiré de l'adresse.
+1. ✅ **Internationalisation** : français et anglais, détection de la langue, sélecteur FR / EN appliqué sans rechargement, dates et nombres localisés, voir § 5 (`manifest.json` reste en français)
+2. ✅ **Historique** : clé `respiration-history` (500 séances au plus, d'au moins 30 s), 10 dernières séances dans un `<details>`, effacement confirmé
+3. ✅ **Statistiques** : séances, minutes, série de jours, 7 derniers jours et graphique SVG de 14 jours, jours calculés en heure locale (sans erreur aux changements d'heure)
+4. ✅ **Partage** : lien `#r=inh,hold1,exh,hold2,total` partagé par `navigator.share` ou copié, validé et borné à l'ouverture
 5. ✅ **Rappels** : rappel quotidien par fichier agenda `.ics` (voir ci-dessous)
 6. ✅ **Mode guidé** : séquences prédéfinies (Détente, Endormissement, Concentration), voir § 4
 
