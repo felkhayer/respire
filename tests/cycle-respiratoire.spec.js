@@ -14,10 +14,13 @@ test.describe('Cycle respiratoire (4 s / 6 s par défaut)', () => {
     await expect(app.dot).toHaveAttribute('opacity', '1');
   });
 
-  test('le compte à rebours décroît d’une unité par seconde pendant l’inspiration', async ({ app }) => {
+  test('le compte à rebours affiche les secondes restantes, arrondies au-dessus', async ({ app }) => {
+    // Échantillons en début de seconde (x,2 s → 3,8 s restantes) : un arrondi au plus proche
+    // afficherait 3 au lieu de 4, ce qu'un échantillon à x,5 s ne distingue pas.
     const vus = [];
-    for (const t of [0.5, 1.5, 2.5, 3.5]) {
-      await app.advance(t === 0.5 ? 0.5 : 1);
+    let t0 = 0;
+    for (const t of [0.2, 1.2, 2.2, 3.2]) {
+      await app.advance(t - t0); t0 = t;
       vus.push(await app.count.textContent());
     }
     expect(vus).toEqual(['4', '3', '2', '1']);

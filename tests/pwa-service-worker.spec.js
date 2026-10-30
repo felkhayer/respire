@@ -38,11 +38,6 @@ function charger(cachesExistants) {
 }
 
 test.describe('Service worker', () => {
-  test('enregistre les trois gestionnaires install / activate / fetch', () => {
-    const { handlers } = charger([]);
-    expect(Object.keys(handlers).sort()).toEqual(['activate', 'fetch', 'install']);
-  });
-
   test('install : pré-cache l’application et s’active immédiatement', async () => {
     const { handlers, journal, ctx, evenement } = charger([]);
     const e = evenement();

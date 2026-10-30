@@ -49,8 +49,8 @@ test.describe('Métadonnées de la page', () => {
   test('référence le manifest et les icônes', () => {
     expect(html).toContain('<link rel="manifest" href="manifest.json">');
     expect(html).toContain('<link rel="apple-touch-icon" href="apple-touch-icon.png">');
+    expect(html).toContain('<link rel="icon" type="image/png" href="icon-192.png">'); // icône déclarée au manifest
     expect(dimensionsPng('apple-touch-icon.png')).toBe('180x180');
-    expect(fs.existsSync(path.join(ROOT, 'icon-192.png'))).toBe(true);
   });
 
   test('viewport adapté aux mobiles à encoche', () => {
@@ -61,9 +61,5 @@ test.describe('Métadonnées de la page', () => {
     expect(html).toContain('<meta name="apple-mobile-web-app-capable" content="yes">');
     expect(html).toContain('<meta name="mobile-web-app-capable" content="yes">');
     expect(html).toContain('<meta name="apple-mobile-web-app-title" content="Respirer">');
-  });
-
-  test('le service worker est enregistré par la page', () => {
-    expect(html).toContain("navigator.serviceWorker.register('sw.js')");
   });
 });

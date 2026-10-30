@@ -9,9 +9,10 @@ changement du code de l'application n'a été nécessaire pour les écrire.
 ```bash
 npm install
 npx playwright install chromium   # une seule fois
-npm test                          # toute la suite (~40 s)
+npm test                          # toute la suite (~35 s)
 npx playwright test reglages      # un seul fichier (filtre sur le nom)
 npx playwright test --ui          # mode interactif pour déboguer
+npm run test:mutation             # vérifie que la suite détecte les régressions (~1 h 30)
 ```
 
 ## Une fonctionnalité = un fichier
@@ -23,13 +24,38 @@ npx playwright test --ui          # mode interactif pour déboguer
 | `prereglages.spec.js` | 4 – 6, 5 – 5, 4 – 7 – 8, Carrée 4 : valeurs, sélection, interactions avec les réglages |
 | `cycle-respiratoire.spec.js` | Phases, compte à rebours, cycles, animation (disque, arc, point), temps écoulé, arrêt, rattrapage après gel de l'affichage |
 | `duree-seance.spec.js` | Fin automatique « Terminé », mode illimité, relance |
-| `reglages-en-cours.spec.js` | Modifier durées / préréglage pendant que la séance tourne |
+| `reglages-en-cours.spec.js` | Modifier durées / préréglage pendant que la séance tourne (dont une anomalie connue, en `test.fail`) |
 | `guide-sonore.spec.js` | Web Audio : notes 220 → 440 Hz, volumes, pauses, programmation à l'avance, interrupteur, repli `webkitAudioContext` |
 | `ecran-allume.spec.js` | Wake Lock, repli NoSleep.js, reprise à la visibilité |
-| `theme-accessibilite.spec.js` | Thème clair/sombre, couleurs de phase, ARIA, clavier, cibles tactiles, responsive |
+| `theme-accessibilite.spec.js` | Thème clair/sombre, couleurs de phase, ARIA (libellés des boutons, interrupteur), clavier, cibles tactiles, responsive |
 | `pwa-manifest.spec.js` | `manifest.json`, icônes (dimensions réelles), métadonnées de `index.html` |
 | `pwa-service-worker.spec.js` | Logique de `sw.js` (install / activate / fetch) en isolation |
 | `pwa-hors-ligne.spec.js` | Vrai service worker : rechargement et utilisation sans réseau |
+
+## Pertinence des tests
+
+Un test n'a sa place ici que s'il **prouve** quelque chose qui casserait pour l'utilisateur :
+une fonctionnalité, un cas d'usage ou une limite (borne, panne d'API, stockage interdit…).
+Concrètement :
+
+- il doit pouvoir **échouer** sur un bug réaliste. Vérifier « pas d'erreur » ou « la phase n'est pas
+  *Prêt* » ne prouve presque rien : on vérifie la valeur attendue ;
+- il ne **duplique** pas un autre test (même scénario, même assertion) ;
+- il vérifie un **comportement**, pas une valeur esthétique arbitraire (durée exacte d'une transition…) ;
+- les instants audio (flottants) se comparent avec une **tolérance**, jamais à l'égalité stricte ;
+- un défaut connu non corrigé s'écrit avec le comportement attendu, marqué `test.fail(...)` et
+  commenté : la suite reste verte, et le jour où le défaut est corrigé Playwright le signale.
+
+### Test de mutation
+
+`tests/mutation/run.js` injecte un par un des bugs plausibles (`tests/mutation/mutants.js`) et relance
+toute la suite. Il signale :
+
+- les **mutants survivants** : bugs qu'aucun test ne détecte → il manque un test ;
+- les **tests qui ne détectent aucun mutant** → test à justifier (ajouter le mutant qu'il protège) ou à supprimer.
+
+Les mutants sans effet observable sont listés, avec leur justification, dans `EQUIVALENTS`.
+Après l'ajout d'une fonctionnalité, ajoutez quelques mutants qui la cassent et vérifiez qu'ils sont détectés.
 
 ## Comment ça marche
 
