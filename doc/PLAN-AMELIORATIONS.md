@@ -22,7 +22,7 @@ Pour que plusieurs fonctionnalités puissent être développées en parallèle s
 | Élément | Rôle |
 |---|---|
 | `on(nom, fn)` / `emit(nom, données)` | Cycle de vie de la séance. `on('start')` ; `on('stop', { done, seconds, cycles })`. Une fonctionnalité s'abonne au lieu de modifier `start()` / `stop()`. |
-| `say(message)` | Message bref dans `#status` (`role="status"`, annoncé aux lecteurs d'écran). |
+| `say(clé, paramètres)` | Message bref dans `#status` (`role="status"`, annoncé aux lecteurs d'écran). Depuis l'internationalisation, il prend une clé du dictionnaire et le message est retraduit au changement de langue. |
 | Ancres `Mode guidé`, `Partage`, `Historique et statistiques`, `Rappels` | Emplacements réservés dans le CSS, le HTML (après le panneau de réglages) et le JavaScript (avant `renderSettings()` final) de `index.html`. |
 | Ancres dans `tests/mutation/mutants.js` | Un bloc de mutants par fonctionnalité. |
 | `npm run test:mutants-check` | Vérifie en quelques millisecondes que chaque mutant trouve encore son texte (le test de mutation complet dure ~1 h 30). |
@@ -132,3 +132,31 @@ isolées, puis les branches sont fusionnées et la suite complète relancée ava
 5. 5 à 10 mutants dans le bloc réservé de `mutants.js`, tous détectés
    (`npm run test:mutation -- id1,id2,…`). `npm run test:mutants-check` et `npm test` au vert.
 6. Documentation : tableau de `tests/README.md`, `README.md`, statut dans `ARCHITECTURE.md`.
+
+## Bilan de réalisation
+
+Les six améliorations sont livrées. Chaque vague a été fusionnée puis vérifiée par la suite complète
+avant la suivante.
+
+| Fonctionnalité | Modèle | Tests ajoutés | Mutants ajoutés | Remarques |
+|---|---|---|---|---|
+| Partage | Haiku | 14 | 8 | Spécification suivie à la lettre ; bornage réécrit pour ne pas dupliquer le texte de deux mutants existants. |
+| Rappels (.ics) | Sonnet | 21 | 10 | Lignes repliées à 75 caractères (RFC 5545). |
+| Historique | Sonnet | 24 (+2 intégration) | 10 (+2) | Une séance guidée est enregistrée avec sa séquence (`g`) et affichée sous son nom. |
+| Mode guidé | Opus | 16 | 10 (+6 réécrits) | `stepAt()` / `catchUp()` : l'image et le son calculent les mêmes instants de changement d'étape. |
+| Statistiques | Sonnet | 25 | 9 | Jours identifiés par (année, mois, jour) locaux, testés autour du changement d'heure. |
+| Internationalisation | Opus | 27 | 10 (+18 réécrits) | Clé `respiration-lang` ; `say()` prend une clé de dictionnaire. |
+
+Suite : 126 → 255 tests ; 147 → 206 mutants.
+
+### Limites et défauts connus
+
+- À la fin automatique d'une séance, le cycle qui se termine pile à l'arrêt n'est pas compté
+  (1 min en 4 – 6 donne 5 cycles au lieu de 6). Ce comportement est antérieur aux améliorations.
+- Choisir une séquence guidée pendant une séance l'applique selon le temps déjà écoulé : la séance
+  peut se terminer aussitôt si ce temps dépasse la durée de la séquence. Choisir une séquence remplace
+  la durée de séance réglée.
+- `manifest.json` reste en français (nom de l'application installée). `<title>` et `<html lang>` valent
+  le français avant l'exécution du script.
+- Le repliement des lignes `.ics` compte des caractères et non des octets UTF-8 ; c'est sans effet
+  aujourd'hui, car seules les URL (ASCII) dépassent 75 caractères.
