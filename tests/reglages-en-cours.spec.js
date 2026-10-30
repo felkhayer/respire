@@ -33,24 +33,31 @@ test.describe('Réglages modifiés en cours de séance', () => {
     await expect(app.cycles).toHaveText('1');
   });
 
-  // Limite connue : la phase en cours est repérée par sa position dans la liste des phases.
-  // Ajouter ou retirer une pause SITUÉE AVANT la phase en cours décale cette position :
-  // l'utilisateur passe brutalement de « Expirez » à une autre phase et le cycle n'est pas compté.
-  // Ces tests décrivent le comportement attendu ; ils échoueront (« expected to fail ») le jour
-  // où l'anomalie sera corrigée, il suffira alors de retirer `test.fail`.
-  test.fail('retirer la rétention pendant l’expiration ne doit pas interrompre l’expiration', async ({ app }) => {
+  // Ajouter ou retirer une pause SITUÉE AVANT la phase en cours ne doit pas changer de phase.
+  test('retirer la rétention pendant l’expiration ne doit pas interrompre l’expiration', async ({ app }) => {
     await app.preset('Carrée 4').click();
     await app.advance(8.5); // en expiration
     await app.click('hold1', '-', 8);
     await app.advance(0.1);
-    await expect(app.phase).toHaveText('Expirez', { timeout: 500 }); // constaté : « Pause »
+    await expect(app.phase).toHaveText('Expirez', { timeout: 500 });
   });
 
-  test.fail('ajouter une rétention pendant l’expiration ne doit pas renvoyer à la rétention', async ({ app }) => {
+  test('ajouter une rétention pendant l’expiration ne doit pas renvoyer à la rétention', async ({ app }) => {
     await app.advance(5.5); // 4 – 6, en expiration
     await app.preset('Carrée 4').click();
     await app.advance(0.1);
-    await expect(app.phase).toHaveText('Expirez', { timeout: 500 }); // constaté : « Retenez »
+    await expect(app.phase).toHaveText('Expirez', { timeout: 500 });
+  });
+
+  test('retirer la rétention pendant la rétention passe à l’expiration, déjà entamée', async ({ app }) => {
+    await app.preset('Carrée 4').click();
+    await app.advance(5.5); // rétention commencée à t = 4 s
+    await app.click('hold1', '-', 8);
+    await app.advance(0.1);
+    // Sans rétention, l'expiration aurait commencé à t = 4 s : il reste 4 − 1,6 = 2,4 s.
+    await expect(app.phase).toHaveText('Expirez');
+    await expect(app.count).toHaveText('3');
+    await expect(app.cycles).toHaveText('0');
   });
 
   test('raccourcir la phase en cours sous le temps déjà écoulé passe à la phase suivante, au bon moment', async ({ app }) => {

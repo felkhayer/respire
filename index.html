@@ -239,6 +239,15 @@ body[data-phase="h1"] .disc, body[data-phase="h2"] .disc { background: var(--hol
     if (ph.k === 'out') return 1 - prog;
     return 0;
   }
+  // La phase en cours est repérée par sa nature et non par sa position : ajouter ou retirer une
+  // pause en cours de séance décale les positions. Si la phase en cours a été retirée, on prend
+  // la suivante (durée nulle) ; list.length signifie qu'il faut repartir sur un nouveau cycle.
+  var ORDER = ['in', 'h1', 'out', 'h2'];
+  function posOf(list, k) {
+    var o = ORDER.indexOf(k);
+    for (var j = 0; j < list.length; j++) if (ORDER.indexOf(list[j].k) >= o) return j;
+    return list.length;
+  }
 
   // ---------- Son ----------
   // Les variations de note sont programmées à l'avance sur l'horloge audio :
@@ -270,7 +279,8 @@ body[data-phase="h1"] .disc, body[data-phase="h2"] .disc { background: var(--hol
     if (!osc) return;
     var now = ctx.currentTime, perfNow = performance.now();
     var list = phases();
-    var i = idx >= list.length ? 0 : idx;
+    var i = posOf(list, cur);
+    if (i >= list.length) i = 0;
     var el = Math.max(0, (perfNow - phaseStart) / 1000);
     var f = osc.frequency, g = gain.gain;
     var curGain = g.value;
@@ -325,7 +335,7 @@ body[data-phase="h1"] .disc, body[data-phase="h2"] .disc { background: var(--hol
   });
 
   // ---------- Boucle ----------
-  var running = false, hasRun = false, idx = 0, phaseStart = 0, startedAt = 0, cycles = 0;
+  var running = false, hasRun = false, cur = 'in', phaseStart = 0, startedAt = 0, cycles = 0;
   var C = 2 * Math.PI * 140;
   var arc = $('arc'), dot = $('dot'), disc = $('disc');
 
@@ -350,7 +360,8 @@ body[data-phase="h1"] .disc, body[data-phase="h2"] .disc { background: var(--hol
     if (!running) return;
     if (cfg.total > 0 && (now - startedAt) / 1000 >= cfg.total * 60) { stop(true); return; }
     var list = phases();
-    if (idx >= list.length) idx = 0;
+    var idx = posOf(list, cur);
+    if (idx >= list.length) { idx = 0; cycles++; }
     var ph = list[idx], el = (now - phaseStart) / 1000, guard = 0;
     while (el >= ph.d && guard++ < 2000) {
       phaseStart += ph.d * 1000;
@@ -359,13 +370,14 @@ body[data-phase="h1"] .disc, body[data-phase="h2"] .disc { background: var(--hol
       ph = list[idx];
       el = (now - phaseStart) / 1000;
     }
+    cur = ph.k;
     render(ph, Math.min(Math.max(el / ph.d, 0), 1), now);
     requestAnimationFrame(frame);
   }
 
   function start() {
     if (cfg.sound) initAudio();
-    running = true; hasRun = true; idx = 0; cycles = 0;
+    running = true; hasRun = true; cur = 'in'; cycles = 0;
     phaseStart = startedAt = performance.now();
     $('go').textContent = 'Arrêter';
     getLock();
