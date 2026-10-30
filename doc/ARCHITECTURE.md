@@ -231,7 +231,7 @@ et de NoSleep.js. Voir [tests/README.md](../tests/README.md).
 
 1. **Internationalisation** : Traduire en anglais et autres langues
 2. ~~**Historique** : Sauvegarder l'historique des séances~~ — **réalisé** : clé `respiration-history` (500 séances au plus, séances d'au moins 30 s), liste des 10 dernières dans un `<details>`, effacement confirmé ; `loadHistory()` / `renderHistory()` servent de base aux statistiques
-3. **Statistiques** : Graphiques de progression sur le long terme
+3. ~~**Statistiques** : Graphiques de progression sur le long terme~~ — **réalisé** ✅ : bloc « Progression » dans le `<details>` de l'historique (séances, minutes, série de jours, 7 derniers jours, graphique SVG de 14 barres) ; `computeStats()` identifie les jours par (année, mois, jour) locaux, donc sans erreur aux changements d'heure
 4. ✅ **Partage** : Permettre de partager ses configurations. Fait : le bouton « Partager ces réglages » construit un lien `#r=inh,hold1,exh,hold2,total` (ex. `#r=4,0,6,0,5`), partagé par `navigator.share` ou copié dans le presse-papiers ; à l'ouverture, le lien est validé, borné, appliqué puis retiré de l'adresse.
 5. ✅ **Rappels** : rappel quotidien par fichier agenda `.ics` (voir ci-dessous)
 6. **Mode guidé** : Séquences prédéfinies (méditation, endormissement, etc.)
