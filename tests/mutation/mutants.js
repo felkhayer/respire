@@ -150,7 +150,17 @@ const MUTANTS = [
   ['arc-full-idle', H, 'stroke-dashoffset="879.65"/>', 'stroke-dashoffset="0"/>'],
   ['css-light-bg', H, '--bg: #edf2ee;', '--bg: #ffffff;'],
   ['sw-no-network', S, 'r => r || fetch(e.request)', 'r => r'],
-  ['preset-46', H, "{ n: '4 – 6',   v: { inh: 4, hold1: 0, exh: 6, hold2: 0 } }", "{ n: '4 – 6',   v: { inh: 4, exh: 6 } }"]
+  ['preset-46', H, "{ n: '4 – 6',   v: { inh: 4, hold1: 0, exh: 6, hold2: 0 } }", "{ n: '4 – 6',   v: { inh: 4, exh: 6 } }"],
+
+  // --- Mode guidé ---
+
+  // --- Partage ---
+
+  // --- Historique et statistiques ---
+
+  // --- Rappels ---
+
+  // --- Internationalisation ---
 ];
 
 // Mutants sans effet observable par l'utilisateur : leur survie est attendue.

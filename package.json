@@ -5,7 +5,8 @@
   "description": "Application PWA de respiration lente",
   "scripts": {
     "test": "playwright test",
-    "test:mutation": "node tests/mutation/run.js"
+    "test:mutation": "node tests/mutation/run.js",
+    "test:mutants-check": "node tests/mutation/check.js"
   },
   "devDependencies": {
     "@playwright/test": "1.63.0"
