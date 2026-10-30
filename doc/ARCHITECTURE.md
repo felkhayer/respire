@@ -233,8 +233,20 @@ et de NoSleep.js. Voir [tests/README.md](../tests/README.md).
 2. **Historique** : Sauvegarder l'historique des séances
 3. **Statistiques** : Graphiques de progression sur le long terme
 4. ✅ **Partage** : Permettre de partager ses configurations. Fait : le bouton « Partager ces réglages » construit un lien `#r=inh,hold1,exh,hold2,total` (ex. `#r=4,0,6,0,5`), partagé par `navigator.share` ou copié dans le presse-papiers ; à l'ouverture, le lien est validé, borné, appliqué puis retiré de l'adresse.
-5. **Notifications** : Rappels pour pratiquer régulièrement
+5. ✅ **Rappels** : rappel quotidien par fichier agenda `.ics` (voir ci-dessous)
 6. **Mode guidé** : Séquences prédéfinies (méditation, endormissement, etc.)
+
+### Rappels : un fichier agenda plutôt que des notifications
+
+Sans serveur, une notification programmée n'est pas fiable sur le web : Push exige un serveur, les
+Notification Triggers ont été abandonnés et Periodic Background Sync est limité à Chrome installé, sans
+heure précise. Le rappel est donc **confié à l'agenda de l'utilisateur** : la section « Rappel quotidien »
+mémorise une heure (clé `localStorage` `respiration-reminder`, `08:00` par défaut) et le bouton
+« Ajouter à mon agenda » télécharge `respirer-rappel.ics` (RFC 5545, lignes CRLF, repliées à 75 caractères) :
+un `VEVENT` quotidien (`RRULE:FREQ=DAILY`) en heure locale flottante, première occurrence aujourd'hui si
+l'heure est à venir, sinon demain, avec une `VALARM` à l'heure de l'événement. Cela fonctionne hors ligne,
+sur tous les systèmes, et aucune donnée ne quitte l'appareil. Limite : l'événement n'est créé que si
+l'utilisateur ouvre le fichier, et sa suppression ou modification se fait ensuite dans l'agenda.
 
 ---
 
