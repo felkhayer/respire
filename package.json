@@ -1,0 +1,12 @@
+{
+  "name": "respire",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Application PWA de respiration lente",
+  "scripts": {
+    "test": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.63.0"
+  }
+}
