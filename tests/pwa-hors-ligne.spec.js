@@ -11,10 +11,10 @@ test.describe('Mode hors ligne', () => {
 
     const cache = await page.evaluate(async () => {
       const noms = await caches.keys();
-      const urls = (await (await caches.open('respiration-v1')).keys()).map((r) => new URL(r.url).pathname);
+      const urls = (await (await caches.open('respiration-v2')).keys()).map((r) => new URL(r.url).pathname);
       return { noms, urls };
     });
-    expect(cache.noms).toContain('respiration-v1');
+    expect(cache.noms).toContain('respiration-v2');
     expect(cache.urls).toEqual(expect.arrayContaining(['/index.html', '/manifest.json', '/icon-192.png', '/icon-512.png', '/apple-touch-icon.png']));
 
     await context.setOffline(true);
