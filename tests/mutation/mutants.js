@@ -77,9 +77,9 @@ const MUTANTS = [
   ['count-round', H, 'Math.ceil(ph.d * (1 - prog) - 0.001)', 'Math.round(ph.d * (1 - prog))'],
   ['count-min0', H, 'Math.max(1, Math.ceil(', 'Math.max(0, Math.ceil('],
   ['elapsed-nopad', H, "String(s % 60).padStart(2, '0')", 'String(s % 60)'],
-  ['render-nocycles', H, "$('cycles').textContent = cycles;", ''],
-  ['frame-noend', H, 'if (cfg.total > 0 && (now - startedAt) / 1000 >= cfg.total * 60) { stop(true); return; }', ''],
-  ['frame-end-early', H, '>= cfg.total * 60) { stop(true)', '>= cfg.total * 60 - 5) { stop(true)'],
+  ['render-nocycles', H, "    $('cycles').textContent = cycles;\n    var s =", '    var s ='],
+  ['frame-noend', H, 'if (cfg.total > 0 && (now - startedAt) / 1000 >= cfg.total * 60) {', 'if (false) {'],
+  ['frame-end-early', H, '(now - startedAt) / 1000 >= cfg.total * 60) {', '(now - startedAt) / 1000 >= cfg.total * 60 - 5) {'],
   ['frame-nocycle', H, 'idx = 0; p.cycles++; p.cycle = p.start; list = cycleList(p.start); }', 'idx = 0; p.cycle = p.start; list = cycleList(p.start); }'],
   ['frame-byindex', H, 'p.cur = ph.k;', 'p.cur = ORDER[idx];'],
   ['frame-nocur', H, 'cur = p.cur; phaseStart', 'phaseStart'],
@@ -151,6 +151,10 @@ const MUTANTS = [
   ['css-light-bg', H, '--bg: #edf2ee;', '--bg: #ffffff;'],
   ['sw-no-network', S, 'r => r || fetch(e.request)', 'r => r'],
   ['preset-46', H, "{ n: '4 – 6',   v: { inh: 4, hold1: 0, exh: 6, hold2: 0 } }", "{ n: '4 – 6',   v: { inh: 4, exh: 6 } }"],
+
+  ['end-nocatchup', H, '      cycles = catchUp(startedAt + cfg.total * 60000 + 0.5).cycles;\n', ''],
+  ['end-noround', H, 'catchUp(startedAt + cfg.total * 60000 + 0.5)', 'catchUp(startedAt + cfg.total * 60000 - 0.5)'],
+  ['end-nodisplay', H, "      $('cycles').textContent = cycles;\n      stop(true); return;", '      stop(true); return;'],
 
   // --- Mode guidé ---
   ['guide-sched-nostep', H, 'list = cycleList(ps); }', 'list = phases(); }'],

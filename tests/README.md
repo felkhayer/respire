@@ -24,7 +24,7 @@ npm run test:mutation             # vérifie que la suite détecte les régressi
 | `partage.spec.js` | Lien de partage des réglages : construction, import, validation, replis share / presse-papiers |
 | `prereglages.spec.js` | 4 – 6, 5 – 5, 4 – 7 – 8, Carrée 4 : valeurs, sélection, interactions avec les réglages |
 | `cycle-respiratoire.spec.js` | Phases, compte à rebours, cycles, animation (disque, arc, point), temps écoulé, arrêt, rattrapage après gel de l'affichage |
-| `duree-seance.spec.js` | Fin automatique « Terminé », mode illimité, relance |
+| `duree-seance.spec.js` | Fin automatique « Terminé » (cycles comptés jusqu'à la fin, même affichage gelé), mode illimité, relance |
 | `reglages-en-cours.spec.js` | Modifier durées / préréglage pendant que la séance tourne (dont l'ajout / le retrait d'une pause située avant la phase en cours) |
 | `mode-guide.spec.js` | Séquences guidées : choix mémorisé, changement de rythme en fin de cycle (dont pile sur la limite), fin au total de la séquence, son programmé aux mêmes instants (reprogrammation, écran éteint), sortie par préréglage ou réglage, accessibilité |
 | `guide-sonore.spec.js` | Web Audio : notes 220 → 440 Hz, volumes, pauses, programmation à l'avance, interrupteur, repli `webkitAudioContext` |

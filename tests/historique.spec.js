@@ -59,8 +59,8 @@ test.describe('Historique des séances', () => {
       await app.advance(58);
       await app.advance(3);
       await expect(app.phase).toHaveText('Terminé');
-      // 5 cycles complets comptés : le 6e se termine pile à l'arrêt (comportement existant de l'application).
-      expect(await lire(page)).toEqual([{ d: 1000, s: 60, c: 5, r: [4, 0, 6, 0], done: true }]);
+      // 6 cycles de 10 s : le dernier se termine pile à la fin et il est compté.
+      expect(await lire(page)).toEqual([{ d: 1000, s: 60, c: 6, r: [4, 0, 6, 0], done: true }]);
     });
 
     test('les séances s’ajoutent à la suite, de la plus ancienne à la plus récente', async ({ app, page }) => {

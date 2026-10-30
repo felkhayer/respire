@@ -656,7 +656,14 @@ body[data-phase="h1"] .disc, body[data-phase="h2"] .disc { background: var(--hol
 
   function frame(now) {
     if (!running) return;
-    if (cfg.total > 0 && (now - startedAt) / 1000 >= cfg.total * 60) { stop(true); return; }
+    if (cfg.total > 0 && (now - startedAt) / 1000 >= cfg.total * 60) {
+      // Cycles comptés jusqu'à l'instant de fin, même si l'affichage était gelé (écran éteint) : le cycle
+      // qui se termine pile à la fin est compris. +0,5 ms absorbe les arrondis (les phases durent un
+      // multiple de 0,5 s, aucune autre ne peut finir dans cet intervalle).
+      cycles = catchUp(startedAt + cfg.total * 60000 + 0.5).cycles;
+      $('cycles').textContent = cycles;
+      stop(true); return;
+    }
     var p = catchUp(now), ph = p.ph, el = p.el;
     cur = p.cur; phaseStart = p.start; cycleStart = p.cycle; cycles = p.cycles;
     guideFrame(); // Mode guidé : étape affichée

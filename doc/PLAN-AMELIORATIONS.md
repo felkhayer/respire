@@ -149,10 +149,15 @@ avant la suivante.
 
 Suite : 126 → 255 tests ; 147 → 206 mutants.
 
-### Limites et défauts connus
+### Défaut corrigé en fin de réalisation
 
-- À la fin automatique d'une séance, le cycle qui se termine pile à l'arrêt n'est pas compté
-  (1 min en 4 – 6 donne 5 cycles au lieu de 6). Ce comportement est antérieur aux améliorations.
+À la fin automatique d'une séance, le cycle qui se terminait pile à l'arrêt n'était pas compté
+(1 min en 4 – 6 donnait 5 cycles au lieu de 6). Après un écran éteint, le compteur restait même à sa
+valeur d'avant la mise en veille. `frame()` rattrape désormais les cycles jusqu'à l'instant de fin
+avant d'arrêter la séance. Ce défaut était antérieur aux améliorations.
+
+### Limites connues
+
 - Choisir une séquence guidée pendant une séance l'applique selon le temps déjà écoulé : la séance
   peut se terminer aussitôt si ce temps dépasse la durée de la séquence. Choisir une séquence remplace
   la durée de séance réglée.
