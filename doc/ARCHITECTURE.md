@@ -218,15 +218,23 @@ osc.frequency.exponentialRampToValueAtTime(targetFrequency, ctx.currentTime + du
 
 ---
 
+## 🧪 Tests
+
+Suite de non-régression Playwright (`tests/`), un fichier par fonctionnalité, exécutée en CI.
+Le code de l'application n'est pas importable (script inline dans `index.html`), donc les tests
+pilotent la vraie page avec une **horloge simulée** et des **doublures** d'`AudioContext`, du Wake Lock
+et de NoSleep.js. Voir [tests/README.md](../tests/README.md).
+
+---
+
 ## 🔮 Améliorations Possibles
 
-1. **Tests automatisés** : Ajouter des tests unitaires pour le calcul des cycles
-2. **Internationalisation** : Traduire en anglais et autres langues
-3. **Historique** : Sauvegarder l'historique des séances
-4. **Statistiques** : Graphiques de progression sur le long terme
-5. **Partage** : Permettre de partager ses configurations
-6. **Notifications** : Rappels pour pratiquer régulièrement
-7. **Mode guidé** : Séquences prédéfinies (méditation, endormissement, etc.)
+1. **Internationalisation** : Traduire en anglais et autres langues
+2. **Historique** : Sauvegarder l'historique des séances
+3. **Statistiques** : Graphiques de progression sur le long terme
+4. **Partage** : Permettre de partager ses configurations
+5. **Notifications** : Rappels pour pratiquer régulièrement
+6. **Mode guidé** : Séquences prédéfinies (méditation, endormissement, etc.)
 
 ---
 

@@ -49,6 +49,9 @@ respire/
 ├── README.md           # Ce fichier
 ├── doc/
 │   └── ARCHITECTURE.md # Documentation technique
+├── tests/              # Tests de non-régression (un fichier par fonctionnalité)
+├── playwright.config.js
+├── package.json
 ├── apple-touch-icon.png
 ├── icon-192.png
 ├── icon-512.png
@@ -62,6 +65,17 @@ Ouvrez simplement `index.html` dans un navigateur, ou utilisez un serveur local 
 python3 -m http.server 8000
 # Puis ouvrez http://localhost:8000
 ```
+
+### Tests de non-régression
+Une suite de tests (Playwright + Chromium) vérifie chaque fonctionnalité : réglages, préréglages,
+cycle respiratoire, durée de séance, guide sonore, écran allumé, thème, accessibilité et PWA hors ligne.
+```bash
+npm install
+npx playwright install chromium   # une seule fois
+npm test
+```
+Détails, organisation et mode d'emploi pour ajouter une fonctionnalité : [tests/README.md](tests/README.md).
+Les tests s'exécutent aussi automatiquement sur GitHub à chaque push et pull request.
 
 ### Déploiement
 Les modifications poussées sur la branche `main` doivent être fusionnées vers `gh-pages` pour être déployées :
