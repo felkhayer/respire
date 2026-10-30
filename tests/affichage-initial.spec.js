@@ -32,8 +32,8 @@ test.describe('Affichage initial', () => {
     await expect(app.setting('total').value).toHaveText('5 min');
   });
 
-  test('le guide sonore est activé par défaut', async ({ page }) => {
-    await expect(page.getByRole('switch', { name: 'Guide sonore' })).toHaveAttribute('aria-checked', 'true');
+  test('le guide sonore est activé par défaut', async ({ app }) => {
+    await expect(app.sound).toHaveAttribute('aria-checked', 'true');
   });
 
   test('le préréglage « 4 – 6 » est sélectionné par défaut', async ({ app }) => {

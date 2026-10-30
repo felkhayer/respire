@@ -63,10 +63,15 @@ test.describe('Thème clair / sombre', () => {
 test.describe('Accessibilité', () => {
   test.beforeEach(async ({ app }) => { await app.open(); });
 
-  test('l’interrupteur sonore est un « switch » nommé « Guide sonore »', async ({ page }) => {
-    const sw = page.getByRole('switch', { name: 'Guide sonore' });
-    await expect(sw).toBeVisible();
-    await expect(sw).toHaveAttribute('aria-checked', 'true');
+  test('l’interrupteur sonore est annoncé comme un « switch » nommé « Guide sonore »', async ({ page }) => {
+    await expect(page.getByRole('switch', { name: 'Guide sonore' })).toBeVisible();
+  });
+
+  test('chaque bouton − / + annonce l’action et le réglage concerné', async ({ page }) => {
+    for (const l of ['Inspiration', 'Pause poumons pleins', 'Expiration', 'Pause poumons vides', 'Durée de l’exercice']) {
+      await expect(page.getByRole('button', { name: 'Augmenter : ' + l })).toBeVisible();
+      await expect(page.getByRole('button', { name: 'Diminuer : ' + l })).toBeVisible();
+    }
   });
 
   test('les cibles tactiles font au moins 44 px', async ({ app, page }) => {
