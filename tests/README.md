@@ -30,6 +30,7 @@ npm run test:mutation             # vérifie que la suite détecte les régressi
 | `ecran-allume.spec.js` | Wake Lock, repli NoSleep.js, reprise à la visibilité |
 | `theme-accessibilite.spec.js` | Thème clair/sombre, couleurs de phase, ARIA (libellés des boutons, interrupteur), clavier, cibles tactiles, responsive |
 | `rappels.spec.js` | Rappel quotidien : fichier `.ics` téléchargé (champs, CRLF, repliement), premier créneau aujourd'hui / demain (horloge simulée), mémorisation de l'heure (valeur invalide, stockage interdit), accessibilité |
+| `historique.spec.js` | Historique : enregistrement (≥ 30 s, fin automatique), persistance, limite de 500, stockage corrompu / interdit, liste des 10 dernières, effacement confirmé ou annulé |
 | `pwa-manifest.spec.js` | `manifest.json`, icônes (dimensions réelles), métadonnées de `index.html` |
 | `pwa-service-worker.spec.js` | Logique de `sw.js` (install / activate / fetch) en isolation |
 | `pwa-hors-ligne.spec.js` | Vrai service worker : rechargement et utilisation sans réseau |

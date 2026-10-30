@@ -22,6 +22,7 @@ Accédez simplement à [https://felkhayer.github.io/respire/](https://felkhayer.
 - **Personnalisable** : Réglage des durées d'inspiration, expiration, et pauses
 - **Préréglages** : 4-6, 5-5, 4-7-8, Carré 4
 - **Partage des réglages** : bouton « Partager ces réglages » qui produit un lien (`…#r=4,0,6,0,5`) ; ouvert, le lien applique les réglages reçus
+- **Historique des séances** : les 10 dernières séances (date, durée, cycles, rythme), conservées sur l'appareil (500 au plus, seules les séances d'au moins 30 s), effaçables
 - **Thème clair/sombre** : Adaptation automatique ou manuelle
 - **Fonctionne en arrière-plan** : Le son continue même écran éteint
 - **Rappel quotidien** : choisissez une heure et ajoutez un événement récurrent à l'agenda de votre téléphone (fichier `.ics`), sans serveur ni notification
