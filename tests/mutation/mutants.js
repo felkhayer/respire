@@ -195,6 +195,9 @@ const MUTANTS = [
   ['stat-aria-today-wrong', H, "' ; aujourd’hui ' + labels[13]", "' ; aujourd’hui ' + labels[12]"],
   ['stat-no-refresh-on-open', H, "if ($('history').open) renderHistory();", ''],
 
+  ['hist-no-guide', H, '    if (sessionGuide) entry.g = sessionGuide.id;\n', ''],
+  ['hist-guide-label', H, 'if (GUIDES[i].id === e.g) return GUIDES[i].n;', 'if (GUIDES[i].id === e.g) return fmtRhythm(e.r);'],
+
   // --- Rappels ---
   ['rem-key', H, "var REM_KEY = 'respiration-reminder'", "var REM_KEY = 'respiration-cfg'"],
   ['rem-default', H, "REM_DEF = '08:00';", "REM_DEF = '09:00';"],

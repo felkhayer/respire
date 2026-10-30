@@ -96,6 +96,23 @@ test.describe('Historique des séances', () => {
       await app.stop();
       expect(await lire(page)).toEqual(avant);
     });
+
+    test('une séance guidée est enregistrée avec sa séquence et affichée sous son nom', async ({ app, page }) => {
+      await app.open();
+      await app.guide('Endormissement').click();
+      await app.start();
+      await app.advance(40);
+      await app.stop();
+      const h = await lire(page);
+      expect(h[0].g).toBe('sommeil');
+      expect(h[0].r).toEqual([4, 0, 6, 0]); // rythme de la première étape
+      await expect(page.locator('#history-list li .meta').first()).toHaveText(/ · Endormissement$/);
+    });
+
+    test('sans séquence connue, la ligne affiche le rythme', async ({ app, page }) => {
+      await app.open({ storage: stocke([entree(1), entree(2, { g: 'inconnue' })]) });
+      await expect(page.locator('#history-list li .meta')).toHaveText([/ · 4 – 6$/, /ycles? · 4 – 6$/]);
+    });
   });
 
   test.describe('Persistance', () => {

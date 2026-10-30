@@ -698,18 +698,26 @@ body[data-phase="h1"] .disc, body[data-phase="h2"] .disc { background: var(--hol
     return [];
   }
   function saveHistory(h) { try { localStorage.setItem(HISTORY_KEY, JSON.stringify(h)); } catch (e) {} }
-  var sessionStart = 0, sessionRhythm = [];
+  // Séance guidée : g = identifiant de la séquence (le rythme relevé est celui de la première étape).
+  var sessionStart = 0, sessionRhythm = [], sessionGuide = null;
   on('start', function () {
     sessionStart = Date.now();
     sessionRhythm = [cfg.inh, cfg.hold1, cfg.exh, cfg.hold2];
+    sessionGuide = guide();
   });
   on('stop', function (r) {
     if (r.seconds < HISTORY_MIN_SECONDS) return;
     var h = loadHistory();
-    h.push({ d: sessionStart, s: r.seconds, c: r.cycles, r: sessionRhythm, done: r.done });
+    var entry = { d: sessionStart, s: r.seconds, c: r.cycles, r: sessionRhythm, done: r.done };
+    if (sessionGuide) entry.g = sessionGuide.id;
+    h.push(entry);
     saveHistory(h.slice(-HISTORY_MAX));
     renderHistory();
   });
+  function entryLabel(e) {
+    for (var i = 0; i < GUIDES.length; i++) if (GUIDES[i].id === e.g) return GUIDES[i].n;
+    return fmtRhythm(e.r);
+  }
   function fmtRhythm(r) {
     return r.filter(function (v, i) { return i === 0 || i === 2 || v > 0; })
       .map(function (v) { return String(v).replace('.', ','); }).join(' – ');
@@ -777,7 +785,7 @@ body[data-phase="h1"] .disc, body[data-phase="h2"] .disc { background: var(--hol
       var when = document.createElement('span'); when.className = 'when'; when.textContent = dateFmt.format(new Date(e.d));
       var meta = document.createElement('span'); meta.className = 'meta';
       meta.textContent = Math.floor(e.s / 60) + ':' + String(e.s % 60).padStart(2, '0') + ' · ' +
-        e.c + (e.c > 1 ? ' cycles' : ' cycle') + ' · ' + fmtRhythm(e.r);
+        e.c + (e.c > 1 ? ' cycles' : ' cycle') + ' · ' + entryLabel(e);
       li.append(when, meta); list.appendChild(li);
     });
     $('history-empty').hidden = h.length > 0;
