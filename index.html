@@ -94,7 +94,7 @@ body[data-phase="h1"] .disc, body[data-phase="h2"] .disc { background: var(--hol
   background: var(--btn-bg); color: var(--btn-ink);
   font: inherit; font-size: 19px; font-weight: 700; cursor: pointer;
 }
-#go:focus-visible, .step button:focus-visible, .chip:focus-visible, .switch:focus-visible { outline: 3px solid var(--in); outline-offset: 3px; }
+#go:focus-visible, .step button:focus-visible, .chip:focus-visible, .seq:focus-visible, .switch:focus-visible { outline: 3px solid var(--in); outline-offset: 3px; }
 .stats { margin-top: 12px; color: var(--muted); font-size: 15px; display: flex; gap: 22px; font-variant-numeric: tabular-nums; }
 
 .panel { width: 100%; margin-top: 26px; padding-top: 20px; border-top: 1px solid var(--line); }
@@ -123,13 +123,94 @@ body[data-phase="h1"] .disc, body[data-phase="h2"] .disc { background: var(--hol
 .switch[aria-checked="true"] { background: var(--in); }
 .switch[aria-checked="true"]::after { transform: translateX(22px); }
 .hint { margin: 14px 0 0; font-size: 14px; color: var(--muted); line-height: 1.5; }
+.status { min-height: 1.5em; margin: 8px 0 0; font-size: 14px; color: var(--muted); text-align: center; }
+
+/* ---------- Mode guidé ---------- */
+.guide { width: 100%; margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--line); }
+.guide h2 { font-size: 16px; font-weight: 600; margin: 0 0 10px; color: var(--muted); }
+.seqs { display: grid; gap: 8px; }
+.seq {
+  display: block; width: 100%; min-height: 44px; padding: 9px 14px; text-align: left;
+  border: 1px solid var(--line); border-radius: 14px; background: transparent; color: var(--ink);
+  font: inherit; font-size: 16px; font-weight: 600; cursor: pointer;
+}
+.seq small { display: block; margin-top: 2px; font-size: 13px; font-weight: 400; color: var(--muted); overflow-wrap: anywhere; }
+.seq[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.seq[aria-pressed="true"] small { color: var(--bg); }
+.ghint { margin: 14px 0 0; font-size: 14px; color: var(--muted); line-height: 1.5; }
+.gstep { min-height: 1.4em; margin: 8px 0 0; font-size: 15px; font-weight: 600; color: var(--muted); text-align: center; font-variant-numeric: tabular-nums; }
+
+/* ---------- Partage ---------- */
+.share { margin-top: 14px; text-align: center; }
+#share { min-height: 44px; }
+
+/* ---------- Historique et statistiques ---------- */
+.history { width: 100%; margin-top: 26px; padding-top: 12px; border-top: 1px solid var(--line); }
+.history summary {
+  display: flex; align-items: center; min-height: 44px; cursor: pointer;
+  font-size: 16px; font-weight: 600; color: var(--ink);
+}
+.history summary:focus-visible, #clear-history:focus-visible {
+  outline: 3px solid var(--in);
+  outline-offset: 3px;
+}
+.history ul { list-style: none; margin: 4px 0 0; padding: 0; }
+.history li {
+  display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 2px 12px;
+  padding: 9px 0; border-bottom: 1px solid var(--line); font-size: 15px;
+}
+.history .when { overflow-wrap: anywhere; }
+.history .meta { color: var(--muted); font-variant-numeric: tabular-nums; }
+.history .empty { margin: 8px 0; color: var(--muted); font-size: 15px; }
+.progress { margin: 4px 0 16px; }
+.progress h3 { margin: 6px 0 10px; font-size: 15px; font-weight: 600; color: var(--muted); }
+.stats-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin: 0; padding: 0; }
+.stat { margin: 0; padding: 8px 10px; border: 1px solid var(--line); border-radius: 12px; }
+.stat dt { font-size: 13px; color: var(--muted); }
+.stat dd { margin: 2px 0 0; font-size: 20px; font-weight: 600; color: var(--ink); font-variant-numeric: tabular-nums; }
+#stats-chart { display: block; width: 100%; height: auto; margin-top: 12px; }
+#stats-chart .bar { fill: var(--in); fill-opacity: .55; }
+#stats-chart .bar.today { fill-opacity: 1; }
+#stats-chart .bar.zero { fill: var(--line); fill-opacity: 1; }
+#stats-chart .bar.zero.today { fill: var(--muted); }
+.stats-axis { display: flex; justify-content: space-between; margin-top: 4px; font-size: 13px; color: var(--muted); }
+#clear-history {
+  margin-top: 12px; min-height: 44px; padding: 0 18px; border: 1px solid var(--line); border-radius: 22px;
+  background: transparent; color: var(--ink); font: inherit; font-size: 15px; cursor: pointer;
+}
+
+/* ---------- Rappels ---------- */
+.reminder { width: 100%; margin-top: 18px; padding-top: 6px; border-top: 1px solid var(--line); }
+.reminder summary {
+  min-height: 44px; display: flex; align-items: center; cursor: pointer;
+  font-size: 16px; font-weight: 600; color: var(--ink);
+}
+.reminder summary:focus-visible, .reminder input:focus-visible, .reminder button:focus-visible {
+  outline: 3px solid var(--in);
+  outline-offset: 3px;
+}
+.reminder .row { padding: 4px 0; }
+.reminder .rem-help { margin: 12px 0 8px; font-size: 14px; color: var(--muted); line-height: 1.5; }
+.reminder input[type="time"] {
+  min-width: 120px; min-height: 44px; padding: 0 10px; font: inherit; font-size: 17px;
+  border: 1px solid var(--line); border-radius: 12px; background: var(--panel); color: var(--ink);
+}
+.reminder .action {
+  min-height: 44px; margin-top: 8px; padding: 0 18px; border: 1px solid var(--line); border-radius: 22px;
+  background: var(--btn-bg); color: var(--btn-ink); font: inherit; font-size: 16px; font-weight: 600; cursor: pointer;
+}
+
+/* ---------- Internationalisation ---------- */
+.langs { display: flex; gap: 8px; }
+.langs .chip { min-width: 44px; min-height: 44px; padding: 0 12px; font-weight: 600; }
+
 @media (prefers-reduced-motion: reduce) { .disc, #phase, svg { transition: none; } }
 </style>
 </head>
 <body data-phase="idle">
 <main>
-  <h1>Respiration lente</h1>
-  <div id="phase">Prêt</div>
+  <h1 data-i18n="appTitle"></h1>
+  <div id="phase"></div>
 
   <div class="dial">
     <svg viewBox="0 0 300 300" aria-hidden="true">
@@ -141,18 +222,67 @@ body[data-phase="h1"] .disc, body[data-phase="h2"] .disc { background: var(--hol
     <div id="count">4</div>
   </div>
 
-  <button id="go" type="button">Démarrer</button>
-  <div class="stats"><span>Cycles : <b id="cycles">0</b></span><span>Durée : <b id="elapsed">0:00</b></span></div>
+  <button id="go" type="button"></button>
+  <div class="stats"><span><span data-i18n="cyclesLbl"></span> <b id="cycles">0</b></span><span><span data-i18n="durationLbl"></span> <b id="elapsed">0:00</b></span></div>
+  <p class="status" id="status" role="status" aria-live="polite"></p>
 
   <section class="panel">
     <div class="chips" id="chips"></div>
     <div id="rows"></div>
     <div class="row">
-      <span class="lbl" id="soundlbl">Guide sonore</span>
+      <span class="lbl" id="langlbl" data-i18n="language"></span>
+      <div class="langs" role="group" aria-labelledby="langlbl">
+        <button type="button" class="chip" data-lang="fr" lang="fr" title="Français">FR</button>
+        <button type="button" class="chip" data-lang="en" lang="en" title="English">EN</button>
+      </div>
+    </div>
+    <div class="row">
+      <span class="lbl" id="soundlbl" data-i18n="sound"></span>
       <button class="switch" id="sound" role="switch" aria-checked="true" aria-labelledby="soundlbl"></button>
     </div>
-    <p class="hint">Le son monte d'une octave pendant l'inspiration et redescend pendant l'expiration : plus il est aigu, plus les poumons sont pleins. Les pauses gardent la même note, plus douce.</p>
+    <p class="hint" data-i18n="hint"></p>
   </section>
+
+  <!-- ---------- Mode guidé ---------- -->
+  <section class="guide" aria-labelledby="guidettl">
+    <h2 id="guidettl" data-i18n="guideTitle"></h2>
+    <div class="seqs" id="seqs"></div>
+    <p class="ghint" data-i18n="guideHint"></p>
+  </section>
+
+  <!-- ---------- Partage ---------- -->
+  <div class="share"><button id="share" class="chip" type="button" data-i18n="share"></button></div>
+
+  <!-- ---------- Historique et statistiques ---------- -->
+  <details class="history" id="history">
+    <summary data-i18n="history"></summary>
+    <section class="progress" id="stats" aria-labelledby="stats-title" hidden>
+      <h3 id="stats-title" data-i18n="progress"></h3>
+      <dl class="stats-grid">
+        <div class="stat"><dt data-i18n="sessions"></dt><dd id="stat-sessions"></dd></div>
+        <div class="stat"><dt data-i18n="minutes"></dt><dd id="stat-minutes"></dd></div>
+        <div class="stat"><dt data-i18n="streak"></dt><dd id="stat-streak"></dd></div>
+        <div class="stat"><dt data-i18n="week"></dt><dd id="stat-week"></dd></div>
+      </dl>
+      <svg id="stats-chart" viewBox="0 0 280 64" role="img" aria-label=""></svg>
+      <div class="stats-axis" aria-hidden="true"><span id="stats-from"></span><span id="stats-to"></span></div>
+    </section>
+    <ul id="history-list"></ul>
+    <p class="empty" id="history-empty" data-i18n="noSessions"></p>
+    <button type="button" id="clear-history" data-i18n="clearHistory"></button>
+  </details>
+
+  <!-- ---------- Rappels ---------- -->
+  <details class="reminder" id="reminder">
+    <summary data-i18n="reminder"></summary>
+    <div class="row">
+      <label for="remtime" data-i18n="remTime"></label>
+      <input type="time" id="remtime" value="08:00" required>
+    </div>
+    <button type="button" class="action" id="remadd" data-i18n="remAdd"></button>
+    <p class="rem-help" data-i18n="remHelp"></p>
+  </details>
+
 </main>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/nosleep/0.12.0/NoSleep.min.js"></script>
@@ -167,17 +297,140 @@ body[data-phase="h1"] .disc, body[data-phase="h2"] .disc { background: var(--hol
     return Object.assign({}, DEF);
   }
   function save() { try { localStorage.setItem('respiration-cfg', JSON.stringify(cfg)); } catch (e) {} }
-  function fmt(n) { return String(n).replace('.', ',') + ' s'; }
+  // ---------- Événements ----------
+  // Les fonctionnalités annexes s'abonnent au cycle de vie de la séance (on('start'), on('stop'))
+  // plutôt que de modifier start() / stop().
+  var listeners = {};
+  function on(name, fn) { (listeners[name] = listeners[name] || []).push(fn); }
+  function emit(name, data) { (listeners[name] || []).forEach(function (fn) { fn(data); }); }
+  // Message bref annoncé aux lecteurs d'écran (zone role="status") : clé du dictionnaire et paramètres.
+  // Le dernier message est retenu pour être retraduit si la langue change.
+  var lastSay = null;
+  function say(key, params) { lastSay = [key, params]; $('status').textContent = t(key, params); }
 
+  // ---------- Internationalisation ----------
+  // Le français est la langue de référence. Une valeur tableau est un pluriel [singulier, pluriel],
+  // choisi par PLURAL selon le paramètre n. « {nom} » est remplacé par le paramètre du même nom.
+  var I18N = {
+    fr: {
+      appTitle: 'Respiration lente',
+      start: 'Démarrer', stop: 'Arrêter', ready: 'Prêt', done: 'Terminé',
+      ph_in: 'Inspirez', ph_h1: 'Retenez', ph_out: 'Expirez', ph_h2: 'Pause',
+      cyclesLbl: 'Cycles :', durationLbl: 'Durée :',
+      f_inh: 'Inspiration', f_hold1: 'Pause poumons pleins', f_exh: 'Expiration', f_hold2: 'Pause poumons vides',
+      f_total: 'Durée de l’exercice',
+      less: 'Diminuer : {x}', more: 'Augmenter : {x}',
+      unlimited: 'Illimitée', square4: 'Carrée 4', decSep: ',',
+      language: 'Langue', sound: 'Guide sonore',
+      hint: "Le son monte d'une octave pendant l'inspiration et redescend pendant l'expiration : plus il est aigu, plus les poumons sont pleins. Les pauses gardent la même note, plus douce.",
+      guideTitle: 'Mode guidé',
+      guideHint: "Chaque séquence enchaîne plusieurs rythmes ; le changement a lieu à la fin d'un cycle. Choisir un préréglage ou modifier un réglage quitte le mode guidé.",
+      g_detente: 'Détente', g_sommeil: 'Endormissement', g_concentration: 'Concentration',
+      step: 'Étape {i} / {n} · {name}',
+      share: 'Partager ces réglages', shareText: 'Mes réglages de respiration',
+      imported: 'Réglages importés', badLink: 'Lien de réglages invalide',
+      copied: 'Lien copié', copyThis: 'Copiez ce lien : {url}',
+      history: 'Historique', progress: 'Progression',
+      sessions: 'Séances', minutes: 'Minutes', streak: 'Série', week: '7 derniers jours',
+      noSessions: 'Aucune séance enregistrée', clearHistory: 'Effacer l’historique',
+      confirmClear: 'Effacer tout l’historique des séances ?', cleared: 'Historique effacé',
+      cycles: ['{n} cycle', '{n} cycles'], days: ['{n} jour', '{n} jours'],
+      chart: 'Minutes de pratique par jour sur 14 jours : {list} ; aujourd’hui {today} min',
+      reminder: 'Rappel quotidien', remTime: 'Heure du rappel', remAdd: 'Ajouter à mon agenda',
+      remHelp: 'Le rappel est confié à l’agenda de votre téléphone : aucun serveur, aucune donnée ne quitte l’appareil, et cela fonctionne hors ligne.',
+      remDone: 'Rappel téléchargé : ouvrez le fichier pour l’ajouter à votre agenda',
+      icsDesc: 'Prenez dix minutes pour respirer lentement, sans écran.', icsFile: 'respirer-rappel.ics'
+    },
+    en: {
+      appTitle: 'Slow breathing',
+      start: 'Start', stop: 'Stop', ready: 'Ready', done: 'Done',
+      ph_in: 'Breathe in', ph_h1: 'Hold', ph_out: 'Breathe out', ph_h2: 'Rest',
+      cyclesLbl: 'Cycles:', durationLbl: 'Time:',
+      f_inh: 'Inhale', f_hold1: 'Hold, lungs full', f_exh: 'Exhale', f_hold2: 'Hold, lungs empty',
+      f_total: 'Session length',
+      less: 'Decrease: {x}', more: 'Increase: {x}',
+      unlimited: 'Unlimited', square4: 'Square 4', decSep: '.',
+      language: 'Language', sound: 'Sound guide',
+      hint: 'The tone rises by an octave as you breathe in and falls back as you breathe out: the higher it is, the fuller your lungs. Pauses keep the same, softer note.',
+      guideTitle: 'Guided mode',
+      guideHint: 'Each sequence chains several rhythms; the change happens at the end of a cycle. Choosing a preset or changing a setting leaves guided mode.',
+      g_detente: 'Relax', g_sommeil: 'Sleep', g_concentration: 'Focus',
+      step: 'Step {i} / {n} · {name}',
+      share: 'Share these settings', shareText: 'My breathing settings',
+      imported: 'Settings imported', badLink: 'Invalid settings link',
+      copied: 'Link copied', copyThis: 'Copy this link: {url}',
+      history: 'History', progress: 'Progress',
+      sessions: 'Sessions', minutes: 'Minutes', streak: 'Streak', week: 'Last 7 days',
+      noSessions: 'No sessions recorded yet', clearHistory: 'Clear history',
+      confirmClear: 'Clear the whole session history?', cleared: 'History cleared',
+      cycles: ['{n} cycle', '{n} cycles'], days: ['{n} day', '{n} days'],
+      chart: 'Practice minutes per day over 14 days: {list}; today {today} min',
+      reminder: 'Daily reminder', remTime: 'Reminder time', remAdd: 'Add to my calendar',
+      remHelp: 'The reminder is handed to your phone’s calendar: no server, no data leaves the device, and it works offline.',
+      remDone: 'Reminder downloaded: open the file to add it to your calendar',
+      icsDesc: 'Take ten minutes to breathe slowly, away from screens.', icsFile: 'breathing-reminder.ics'
+    }
+  };
+  // Index de la forme : 0 singulier, 1 pluriel (en français, 0 et 1 sont au singulier).
+  var PLURAL = {
+    fr: function (n) { return n < 2 ? 0 : 1; },
+    en: function (n) { return n === 1 ? 0 : 1; }
+  };
+  // Préférence dans sa propre clé : la config des réglages (respiration-cfg) et le lien de partage
+  // ne dépendent pas de la langue.
+  var LANG_KEY = 'respiration-lang';
+  function loadLang() {
+    try { var s = localStorage.getItem(LANG_KEY); if (I18N.hasOwnProperty(s)) return s; } catch (e) {}
+    return /^fr(-|$)/i.test(navigator.language || '') ? 'fr' : 'en';
+  }
+  var lang = loadLang();
+  function t(key, params) {
+    var v = I18N[lang].hasOwnProperty(key) ? I18N[lang][key] : I18N.fr[key];
+    if (Array.isArray(v)) v = v[PLURAL[lang](params.n)];
+    return String(v).replace(/\{(\w+)\}/g, function (m, k) { return params && k in params ? params[k] : m; });
+  }
+  // Nombre avec le séparateur décimal de la langue : 4,5 / 4.5.
+  function num(n) { return String(n).replace('.', t('decSep')); }
+  // Locale des dates : celle du navigateur si elle est de la langue choisie (en-GB, fr-CA…), sinon la langue.
+  function locale() {
+    var n = navigator.language || '';
+    return n.toLowerCase().indexOf(lang) === 0 ? n : lang;
+  }
+  function translatePage() {
+    document.documentElement.lang = lang;
+    document.title = t('appTitle');
+    Array.prototype.forEach.call(document.querySelectorAll('[data-i18n]'), function (el) {
+      el.textContent = t(el.getAttribute('data-i18n'));
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('[data-lang]'), function (b) {
+      b.setAttribute('aria-pressed', b.getAttribute('data-lang') === lang ? 'true' : 'false');
+    });
+  }
+  // Changement immédiat, sans rechargement : chaque partie de l'interface s'abonne à on('lang').
+  function setLang(l) {
+    lang = l;
+    try { localStorage.setItem(LANG_KEY, l); } catch (e) {}
+    translatePage();
+    emit('lang');
+  }
+  Array.prototype.forEach.call(document.querySelectorAll('[data-lang]'), function (b) {
+    b.onclick = function () { setLang(b.getAttribute('data-lang')); };
+  });
+  translatePage();
+  on('lang', function () { if (lastSay) say(lastSay[0], lastSay[1]); });
+
+  function fmt(n) { return num(n) + ' s'; }
+
+  // Libellés : t('f_' + k).
   var FIELDS = [
-    { k: 'inh',   label: 'Inspiration',          min: 1, max: 30 },
-    { k: 'hold1', label: 'Pause poumons pleins', min: 0, max: 30 },
-    { k: 'exh',   label: 'Expiration',           min: 1, max: 30 },
-    { k: 'hold2', label: 'Pause poumons vides',  min: 0, max: 30 },
-    { k: 'total', label: 'Durée de l\u2019exercice', min: 0, max: 60, step: 1, unit: 'min' }
+    { k: 'inh',   min: 1, max: 30 },
+    { k: 'hold1', min: 0, max: 30 },
+    { k: 'exh',   min: 1, max: 30 },
+    { k: 'hold2', min: 0, max: 30 },
+    { k: 'total', min: 0, max: 60, step: 1, unit: 'min' }
   ];
   function fmtField(f) {
-    if (f.k === 'total') return cfg.total === 0 ? 'Illimitée' : cfg.total + ' min';
+    if (f.k === 'total') return cfg.total === 0 ? t('unlimited') : cfg.total + ' min';
     return fmt(cfg[f.k]);
   }
   function totalSuffix() { return cfg.total > 0 ? ' / ' + cfg.total + ':00' : ''; }
@@ -185,39 +438,56 @@ body[data-phase="h1"] .disc, body[data-phase="h2"] .disc { background: var(--hol
     { n: '4 – 6',   v: { inh: 4, hold1: 0, exh: 6, hold2: 0 } },
     { n: '5 – 5',   v: { inh: 5, hold1: 0, exh: 5, hold2: 0 } },
     { n: '4 – 7 – 8', v: { inh: 4, hold1: 7, exh: 8, hold2: 0 } },
-    { n: 'Carrée 4',  v: { inh: 4, hold1: 4, exh: 4, hold2: 4 } }
+    { key: 'square4', v: { inh: 4, hold1: 4, exh: 4, hold2: 4 } }
   ];
+  // Nom affiché d'un préréglage ou d'une étape guidée : traduit s'il a une clé, sinon le rythme tel quel.
+  function presetName(p) { return p.key ? t(p.key) : p.n; }
 
   // ---------- Réglages ----------
   var rowsEl = $('rows'), chipsEl = $('chips'), outputs = {};
   FIELDS.forEach(function (f) {
     var row = document.createElement('div'); row.className = 'row';
-    var lab = document.createElement('span'); lab.className = 'lbl'; lab.textContent = f.label;
+    var lab = document.createElement('span'); lab.className = 'lbl';
     var step = document.createElement('div'); step.className = 'step';
-    var minus = document.createElement('button'); minus.type = 'button'; minus.textContent = '−'; minus.setAttribute('aria-label', 'Diminuer : ' + f.label);
+    var minus = document.createElement('button'); minus.type = 'button'; minus.textContent = '−';
     var out = document.createElement('output'); outputs[f.k] = out;
-    var plus = document.createElement('button'); plus.type = 'button'; plus.textContent = '+'; plus.setAttribute('aria-label', 'Augmenter : ' + f.label);
+    var plus = document.createElement('button'); plus.type = 'button'; plus.textContent = '+';
+    f.lab = lab; f.minus = minus; f.plus = plus;
     minus.onclick = function () { setVal(f, cfg[f.k] - (f.step || 0.5)); };
     plus.onclick = function () { setVal(f, cfg[f.k] + (f.step || 0.5)); };
     step.append(minus, out, plus); row.append(lab, step); rowsEl.appendChild(row);
   });
-  function setVal(f, v) { cfg[f.k] = Math.min(f.max, Math.max(f.min, v)); save(); renderSettings(); if (running) schedule(); }
+  // Mode guidé : modifier un réglage ou choisir un préréglage quitte le mode guidé (leaveGuide).
+  function setVal(f, v) { leaveGuide(); cfg[f.k] = Math.min(f.max, Math.max(f.min, v)); save(); renderSettings(); if (running) schedule(); }
 
   PRESETS.forEach(function (p) {
-    var b = document.createElement('button'); b.type = 'button'; b.className = 'chip'; b.textContent = p.n;
-    b.onclick = function () { Object.assign(cfg, p.v); save(); renderSettings(); if (running) schedule(); };
+    var b = document.createElement('button'); b.type = 'button'; b.className = 'chip';
+    b.onclick = function () { leaveGuide(); Object.assign(cfg, p.v); save(); renderSettings(); if (running) schedule(); };
     p.el = b; chipsEl.appendChild(b);
   });
+  // Libellés traduits des réglages (visibles et ARIA) et des préréglages.
+  function renderLabels() {
+    FIELDS.forEach(function (f) {
+      var label = t('f_' + f.k);
+      f.lab.textContent = label;
+      f.minus.setAttribute('aria-label', t('less', { x: label }));
+      f.plus.setAttribute('aria-label', t('more', { x: label }));
+    });
+    PRESETS.forEach(function (p) { p.el.textContent = presetName(p); });
+  }
+  renderLabels();
+  on('lang', function () { renderLabels(); renderSettings(); });
 
   function renderSettings() {
     FIELDS.forEach(function (f) { outputs[f.k].textContent = fmtField(f); });
     if (!running && !hasRun) $('elapsed').textContent = '0:00' + totalSuffix();
     PRESETS.forEach(function (p) {
-      var on = Object.keys(p.v).every(function (k) { return cfg[k] === p.v[k]; });
+      // Mode guidé : aucun préréglage n'est sélectionné tant qu'une séquence est suivie.
+      var on = !guide() && Object.keys(p.v).every(function (k) { return cfg[k] === p.v[k]; });
       p.el.setAttribute('aria-pressed', on ? 'true' : 'false');
     });
     $('sound').setAttribute('aria-checked', cfg.sound ? 'true' : 'false');
-    if (!running) $('count').textContent = String(cfg.inh).replace('.', ',');
+    if (!running) $('count').textContent = num(cfg.inh);
   }
 
   $('sound').onclick = function () {
@@ -226,11 +496,14 @@ body[data-phase="h1"] .disc, body[data-phase="h2"] .disc { background: var(--hol
   };
 
   // ---------- Phases ----------
-  function phases() {
-    var p = [{ k: 'in', n: 'Inspirez', d: cfg.inh }];
-    if (cfg.hold1 > 0) p.push({ k: 'h1', n: 'Retenez', d: cfg.hold1 });
-    p.push({ k: 'out', n: 'Expirez', d: cfg.exh });
-    if (cfg.hold2 > 0) p.push({ k: 'h2', n: 'Pause', d: cfg.hold2 });
+  // r : rythme { inh, hold1, exh, hold2 } du cycle (par défaut les réglages ; voir cycleList pour le mode guidé).
+  function phases(r) {
+    r = r || cfg;
+    // Nom affiché : t('ph_' + k), au rendu (il suit donc la langue).
+    var p = [{ k: 'in', d: r.inh }];
+    if (r.hold1 > 0) p.push({ k: 'h1', d: r.hold1 });
+    p.push({ k: 'out', d: r.exh });
+    if (r.hold2 > 0) p.push({ k: 'h2', d: r.hold2 });
     return p;
   }
   function levelOf(ph, prog) {
@@ -278,10 +551,11 @@ body[data-phase="h1"] .disc, body[data-phase="h2"] .disc { background: var(--hol
     initAudio();
     if (!osc) return;
     var now = ctx.currentTime, perfNow = performance.now();
-    var list = phases();
-    var i = posOf(list, cur);
-    if (i >= list.length) i = 0;
-    var el = Math.max(0, (perfNow - phaseStart) / 1000);
+    // Recalage commun avec frame() : la position est juste même si l'affichage était gelé.
+    var pos = catchUp(perfNow);
+    var list = pos.list, i = pos.idx;
+    var ps = pos.start; // début (ms, horloge de la page) de la phase programmée, cumulé comme dans catchUp()
+    var el = Math.max(0, (perfNow - pos.start) / 1000);
     var f = osc.frequency, g = gain.gain;
     var curGain = g.value;
     f.cancelScheduledValues(now); g.cancelScheduledValues(now);
@@ -299,8 +573,9 @@ body[data-phase="h1"] .disc, body[data-phase="h2"] .disc { background: var(--hol
       if (!first) f.setValueAtTime(F0 * Math.pow(2, levelOf(ph, 0)), t);
       if (!hold) f.exponentialRampToValueAtTime(F0 * Math.pow(2, levelOf(ph, 1)), t + d);
       g.setTargetAtTime(hold ? 0.06 : 0.15, t, 0.08);
-      t += d; i++;
-      if (i >= list.length) { i = 0; list = phases(); }
+      t += d; i++; ps += ph.d * 1000;
+      // Rythme du cycle suivant (mode guidé) : même calcul que catchUp(), donc mêmes instants de changement.
+      if (i >= list.length) { i = 0; list = cycleList(ps); }
       first = false;
     }
     if (endAt !== Infinity) {
@@ -335,14 +610,16 @@ body[data-phase="h1"] .disc, body[data-phase="h2"] .disc { background: var(--hol
   });
 
   // ---------- Boucle ----------
+  var idle = 'ready'; // texte de la phase hors séance : 'ready' (Prêt) ou 'done' (Terminé)
   var running = false, hasRun = false, cur = 'in', phaseStart = 0, startedAt = 0, cycles = 0;
+  var cycleStart = 0; // début (ms) du cycle en cours : fixe le rythme du cycle en mode guidé
   var C = 2 * Math.PI * 140;
   var arc = $('arc'), dot = $('dot'), disc = $('disc');
 
   function render(ph, prog, now) {
     var level = levelOf(ph, prog);
     document.body.setAttribute('data-phase', ph.k);
-    $('phase').textContent = ph.n;
+    $('phase').textContent = t('ph_' + ph.k);
     disc.style.transform = 'scale(' + (0.5 + 0.5 * level).toFixed(4) + ')';
     arc.style.strokeDashoffset = (C * (1 - prog)).toFixed(2);
     var a = -Math.PI / 2 + 2 * Math.PI * prog;
@@ -356,21 +633,40 @@ body[data-phase="h1"] .disc, body[data-phase="h2"] .disc { background: var(--hol
     $('elapsed').textContent = Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0') + totalSuffix();
   }
 
+  // Position de la séance à l'instant `now` (ms), rattrapée depuis l'état courant : phase (cur), début de
+  // phase (start), début de cycle (cycle), cycles. Ne modifie rien : frame() l'enregistre, schedule()
+  // s'en sert pour programmer le son. Les deux calculent ainsi les mêmes instants (notamment les
+  // changements d'étape du mode guidé), même après un long gel de l'affichage.
+  function catchUp(now) {
+    var p = { cur: cur, start: phaseStart, cycle: cycleStart, cycles: cycles };
+    var list = cycleList(p.cycle);
+    var idx = posOf(list, p.cur);
+    if (idx >= list.length) { idx = 0; p.cycles++; p.cycle = p.start; list = cycleList(p.cycle); }
+    var ph = list[idx], el = (now - p.start) / 1000, guard = 0;
+    while (el >= ph.d && guard++ < 2000) {
+      p.start += ph.d * 1000;
+      idx++;
+      if (idx >= list.length) { idx = 0; p.cycles++; p.cycle = p.start; list = cycleList(p.start); }
+      ph = list[idx];
+      el = (now - p.start) / 1000;
+    }
+    p.cur = ph.k; p.list = list; p.idx = idx; p.ph = ph; p.el = el;
+    return p;
+  }
+
   function frame(now) {
     if (!running) return;
-    if (cfg.total > 0 && (now - startedAt) / 1000 >= cfg.total * 60) { stop(true); return; }
-    var list = phases();
-    var idx = posOf(list, cur);
-    if (idx >= list.length) { idx = 0; cycles++; }
-    var ph = list[idx], el = (now - phaseStart) / 1000, guard = 0;
-    while (el >= ph.d && guard++ < 2000) {
-      phaseStart += ph.d * 1000;
-      idx++;
-      if (idx >= list.length) { idx = 0; cycles++; list = phases(); }
-      ph = list[idx];
-      el = (now - phaseStart) / 1000;
+    if (cfg.total > 0 && (now - startedAt) / 1000 >= cfg.total * 60) {
+      // Cycles comptés jusqu'à l'instant de fin, même si l'affichage était gelé (écran éteint) : le cycle
+      // qui se termine pile à la fin est compris. +0,5 ms absorbe les arrondis (les phases durent un
+      // multiple de 0,5 s, aucune autre ne peut finir dans cet intervalle).
+      cycles = catchUp(startedAt + cfg.total * 60000 + 0.5).cycles;
+      $('cycles').textContent = cycles;
+      stop(true); return;
     }
-    cur = ph.k;
+    var p = catchUp(now), ph = p.ph, el = p.el;
+    cur = p.cur; phaseStart = p.start; cycleStart = p.cycle; cycles = p.cycles;
+    guideFrame(); // Mode guidé : étape affichée
     render(ph, Math.min(Math.max(el / ph.d, 0), 1), now);
     requestAnimationFrame(frame);
   }
@@ -378,28 +674,357 @@ body[data-phase="h1"] .disc, body[data-phase="h2"] .disc { background: var(--hol
   function start() {
     if (cfg.sound) initAudio();
     running = true; hasRun = true; cur = 'in'; cycles = 0;
-    phaseStart = startedAt = performance.now();
-    $('go').textContent = 'Arrêter';
+    cycleStart = phaseStart = startedAt = performance.now();
+    $('go').textContent = t('stop');
     getLock();
     schedule();
     clearInterval(refillTimer);
     refillTimer = setInterval(function () { if (running) schedule(); }, 300000);
     requestAnimationFrame(frame);
+    emit('start');
   }
   function stop(done) {
+    var endedAt = performance.now();
     running = false;
     clearInterval(refillTimer);
     stopAudio(); releaseLock();
-    $('go').textContent = 'Démarrer';
-    $('phase').textContent = done === true ? 'Terminé' : 'Prêt';
+    $('go').textContent = t('start');
+    idle = done === true ? 'done' : 'ready';
+    $('phase').textContent = t(idle);
     if (done === true) $('elapsed').textContent = cfg.total + ':00' + totalSuffix();
     document.body.setAttribute('data-phase', 'idle');
     disc.style.transform = 'scale(.5)';
     arc.style.strokeDashoffset = C;
     dot.setAttribute('opacity', '0');
     renderSettings();
+    emit('stop', {
+      done: done === true,
+      seconds: done === true ? cfg.total * 60 : Math.floor((endedAt - startedAt) / 1000),
+      cycles: cycles
+    });
   }
   $('go').onclick = function () { running ? stop(false) : start(); };
+  // Bouton principal et phase affichée, y compris pendant une séance (sans attendre l'image suivante).
+  function renderMain() {
+    $('go').textContent = t(running ? 'stop' : 'start');
+    $('phase').textContent = t(running ? 'ph_' + cur : idle);
+  }
+  renderMain();
+  on('lang', renderMain);
+
+  // ---------- Mode guidé ----------
+  // Une séquence enchaîne plusieurs rythmes, chacun pendant `min` minutes. Le rythme change à la fin
+  // du premier cycle qui atteint ou dépasse la limite de l'étape ; la séance dure le total de la séquence.
+  // cfg.guide (absent hors mode guidé) mémorise la séquence choisie. Pendant le mode guidé, les réglages
+  // affichent le rythme en vigueur (copié dans cfg) et la durée de la séquence.
+  function rh(inh, hold1, exh, hold2) { return { inh: inh, hold1: hold1, exh: exh, hold2: hold2 }; }
+  var GUIDES = [
+    { id: 'detente', steps: [
+      { n: '4 – 4', min: 1, v: rh(4, 0, 4, 0) },
+      { n: '4 – 6', min: 2, v: rh(4, 0, 6, 0) },
+      { n: '4 – 8', min: 3, v: rh(4, 0, 8, 0) }] },
+    { id: 'sommeil', steps: [
+      { n: '4 – 6', min: 2, v: rh(4, 0, 6, 0) },
+      { n: '4 – 7 – 8', min: 8, v: rh(4, 7, 8, 0) }] },
+    { id: 'concentration', steps: [
+      { n: '5 – 5', min: 2, v: rh(5, 0, 5, 0) },
+      { key: 'square4', min: 6, v: rh(4, 4, 4, 4) },
+      { n: '5 – 5', min: 2, v: rh(5, 0, 5, 0) }] }
+  ];
+  // Nom affiché : t('g_' + id).
+  GUIDES.forEach(function (g) { g.total = g.steps.reduce(function (s, st) { return s + st.min; }, 0); });
+
+  function guide() {
+    for (var i = 0; i < GUIDES.length; i++) if (GUIDES[i].id === cfg.guide) return GUIDES[i];
+    return null;
+  }
+  // Étape d'un cycle qui commence à `t` secondes du début de la séance : la première dont la limite
+  // n'est pas encore atteinte. Fonction pure : frame() et schedule() en déduisent les mêmes instants.
+  // Tolérance d'1 ms : un cycle qui finit pile sur la limite (aux arrondis près) passe à l'étape suivante.
+  function stepAt(g, t) {
+    var lim = 0;
+    for (var i = 0; i < g.steps.length; i++) { lim += g.steps[i].min * 60; if (t < lim - 0.001) return i; }
+    return g.steps.length - 1;
+  }
+  // Phases d'un cycle commençant à l'instant `cs` (ms, horloge de la page) : rythme de l'étape en mode
+  // guidé, sinon les réglages.
+  function cycleList(cs) {
+    var g = guide();
+    return phases(g ? g.steps[stepAt(g, (cs - startedAt) / 1000)].v : cfg);
+  }
+
+  // Affiche l'étape en cours et recopie son rythme (et la durée de la séquence) dans les réglages.
+  // Hors séance, c'est la première étape. Appelée à chaque image, au choix d'une séquence et à l'arrêt.
+  var gstep = document.createElement('p');
+  gstep.className = 'gstep'; gstep.id = 'gstep'; gstep.setAttribute('aria-live', 'polite');
+  var statsEl = document.querySelector('.stats');
+  statsEl.parentNode.insertBefore(gstep, statsEl.nextSibling);
+  function guideFrame() {
+    var g = guide(), text = '';
+    if (g) {
+      var i = running ? stepAt(g, (cycleStart - startedAt) / 1000) : 0, st = g.steps[i], changed = false;
+      ['inh', 'hold1', 'exh', 'hold2'].forEach(function (k) { if (cfg[k] !== st.v[k]) { cfg[k] = st.v[k]; changed = true; } });
+      if (cfg.total !== g.total) { cfg.total = g.total; changed = true; }
+      if (changed) renderSettings();
+      if (running) text = t('step', { i: i + 1, n: g.steps.length, name: presetName(st) });
+    }
+    if (gstep.textContent !== text) gstep.textContent = text;
+  }
+
+  var seqsEl = $('seqs');
+  GUIDES.forEach(function (g) {
+    var b = document.createElement('button'); b.type = 'button'; b.className = 'seq';
+    b.onclick = function () {
+      if (cfg.guide === g.id) delete cfg.guide; else cfg.guide = g.id; // un second appui quitte le mode guidé
+      guideFrame(); save(); renderSettings(); renderGuide();
+      if (running) schedule();
+    };
+    g.el = b; seqsEl.appendChild(b);
+  });
+  function renderGuideLabels() {
+    GUIDES.forEach(function (g) {
+      var detail = document.createElement('small');
+      detail.textContent = g.steps.map(function (st) { return presetName(st) + ' (' + st.min + ' min)'; }).join(' → ') + ' · ' + g.total + ' min';
+      g.el.textContent = '';
+      g.el.append(t('g_' + g.id), ' ', detail);
+    });
+  }
+  renderGuideLabels();
+  on('lang', function () { renderGuideLabels(); guideFrame(); });
+  function renderGuide() {
+    var sel = guide();
+    GUIDES.forEach(function (g) { g.el.setAttribute('aria-pressed', g === sel ? 'true' : 'false'); });
+  }
+  function leaveGuide() {
+    if (!('guide' in cfg)) return;
+    delete cfg.guide; renderGuide(); guideFrame();
+  }
+  on('stop', guideFrame);
+  renderGuide(); guideFrame();
+
+  // ---------- Partage ----------
+  // Lien « <page>#r=inh,hold1,exh,hold2,total ». Le fragment n'est jamais envoyé au serveur.
+  var SHARE_KEYS = ['inh', 'hold1', 'exh', 'hold2', 'total'];
+  function shareUrl() {
+    return location.href.split('#')[0] + '#r=' + SHARE_KEYS.map(function (k) { return cfg[k]; }).join(',');
+  }
+  // undefined : pas un lien de réglages ; null : lien invalide ; objet : valeurs bornées et arrondies.
+  function parseShared(hash) {
+    if (typeof hash !== 'string' || hash.indexOf('#r=') !== 0) return undefined;
+    var parts = hash.slice(3).split(',');
+    if (parts.length !== SHARE_KEYS.length) return null;
+    var out = {};
+    for (var i = 0; i < SHARE_KEYS.length; i++) {
+      var k = SHARE_KEYS[i], raw = parts[i];
+      if (/^\s*$/.test(raw)) return null;
+      var v = Number(raw);
+      if (!isFinite(v)) return null;
+      var f = FIELDS.filter(function (x) { return x.k === k; })[0], step = f.step || 0.5;
+      v = Math.round(v / step) * step;
+      out[k] = Math.max(f.min, Math.min(f.max, v));
+    }
+    return out;
+  }
+  var shared = parseShared(location.hash);
+  if (shared) { Object.assign(cfg, shared); save(); say('imported'); }
+  else if (shared === null) say('badLink');
+  if (shared !== undefined) {
+    try { history.replaceState(null, '', location.pathname + location.search); } catch (e) {}
+  }
+  $('share').onclick = function () {
+    var url = shareUrl();
+    function copy() {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url).then(function () { say('copied'); }, function () { say('copyThis', { url: url }); });
+      } else {
+        say('copyThis', { url: url });
+      }
+    }
+    if (navigator.share) {
+      navigator.share({ title: t('appTitle'), text: t('shareText'), url: url }).catch(function (err) {
+        if (err && err.name === 'AbortError') return;
+        copy();
+      });
+    } else {
+      copy();
+    }
+  };
+
+  // ---------- Historique et statistiques ----------
+  var HISTORY_KEY = 'respiration-history', HISTORY_MAX = 500, HISTORY_MIN_SECONDS = 30, HISTORY_SHOWN = 10;
+  // Toujours un tableau : vide si le stockage est interdit, le JSON corrompu ou d'un autre type.
+  function loadHistory() {
+    try {
+      var h = JSON.parse(localStorage.getItem(HISTORY_KEY));
+      if (Array.isArray(h)) return h.filter(function (e) {
+        return e && typeof e === 'object' && isFinite(e.d) && isFinite(e.s) && isFinite(e.c) && Array.isArray(e.r);
+      });
+    } catch (e) {}
+    return [];
+  }
+  function saveHistory(h) { try { localStorage.setItem(HISTORY_KEY, JSON.stringify(h)); } catch (e) {} }
+  // Séance guidée : g = identifiant de la séquence (le rythme relevé est celui de la première étape).
+  var sessionStart = 0, sessionRhythm = [], sessionGuide = null;
+  on('start', function () {
+    sessionStart = Date.now();
+    sessionRhythm = [cfg.inh, cfg.hold1, cfg.exh, cfg.hold2];
+    sessionGuide = guide();
+  });
+  on('stop', function (r) {
+    if (r.seconds < HISTORY_MIN_SECONDS) return;
+    var h = loadHistory();
+    var entry = { d: sessionStart, s: r.seconds, c: r.cycles, r: sessionRhythm, done: r.done };
+    if (sessionGuide) entry.g = sessionGuide.id;
+    h.push(entry);
+    saveHistory(h.slice(-HISTORY_MAX));
+    renderHistory();
+  });
+  function entryLabel(e) {
+    for (var i = 0; i < GUIDES.length; i++) if (GUIDES[i].id === e.g) return t('g_' + e.g);
+    return fmtRhythm(e.r);
+  }
+  function fmtRhythm(r) {
+    return r.filter(function (v, i) { return i === 0 || i === 2 || v > 0; }).map(num).join(' – ');
+  }
+  // Formats de date de la langue courante (recréés au changement de langue).
+  var dateFmt, shortDate;
+  function makeDateFormats() {
+    dateFmt = new Intl.DateTimeFormat(locale(), { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+    shortDate = new Intl.DateTimeFormat(locale(), { day: 'numeric', month: 'short' });
+  }
+  makeDateFormats();
+  // Statistiques : jours identifiés par (année, mois, jour) locaux, jamais par division de millisecondes
+  // (un jour de changement d'heure dure 23 h ou 25 h).
+  function dayKey(date) { return date.getFullYear() * 10000 + date.getMonth() * 100 + date.getDate(); }
+  function localDay(now, back) { return new Date(now.getFullYear(), now.getMonth(), now.getDate() - back); }
+  function computeStats(h, now) {
+    var perDay = {}, seconds = 0, i;
+    h.forEach(function (e) {
+      var k = dayKey(new Date(e.d));
+      perDay[k] = (perDay[k] || 0) + e.s;
+      seconds += e.s;
+    });
+    var keys = [];
+    for (i = 13; i >= 0; i--) keys.push(dayKey(localDay(now, i)));
+    var week = 0;
+    for (i = 7; i < 14; i++) week += perDay[keys[i]] || 0;
+    var streak = 0, back = perDay[keys[13]] ? 0 : 1;
+    while (perDay[dayKey(localDay(now, back + streak))]) streak++;
+    return {
+      sessions: h.length, minutes: Math.round(seconds / 60), streak: streak,
+      week: Math.round(week / 60),
+      perDay: keys.map(function (k) { return (perDay[k] || 0) / 60; }),
+      first: localDay(now, 13), last: localDay(now, 0)
+    };
+  }
+  var SVG_NS = 'http://www.w3.org/2000/svg';
+  function renderStats(h) {
+    $('stats').hidden = h.length === 0;
+    if (h.length === 0) return;
+    var st = computeStats(h, new Date());
+    $('stat-sessions').textContent = st.sessions;
+    $('stat-minutes').textContent = st.minutes;
+    $('stat-streak').textContent = t('days', { n: st.streak });
+    $('stat-week').textContent = st.week + ' min';
+    var svg = $('stats-chart'), max = Math.max.apply(null, st.perDay), labels = [];
+    svg.textContent = '';
+    st.perDay.forEach(function (m, i) {
+      var hgt = m > 0 ? Math.max(3, 60 * m / max) : 2;
+      var r = document.createElementNS(SVG_NS, 'rect');
+      r.setAttribute('class', 'bar' + (m > 0 ? '' : ' zero') + (i === 13 ? ' today' : ''));
+      r.setAttribute('x', i * 20); r.setAttribute('width', 16);
+      r.setAttribute('y', 62 - hgt); r.setAttribute('height', hgt);
+      r.setAttribute('rx', 2);
+      svg.appendChild(r);
+      labels.push(Math.round(m));
+    });
+    svg.setAttribute('aria-label', t('chart', { list: labels.join(', '), today: labels[13] }));
+    $('stats-from').textContent = shortDate.format(st.first);
+    $('stats-to').textContent = shortDate.format(st.last);
+  }
+  // Recalcul à l'ouverture : couvre le passage de minuit si l'onglet est resté ouvert.
+  $('history').addEventListener('toggle', function () { if ($('history').open) renderHistory(); });
+  function renderHistory() {
+    var all = loadHistory(), h = all.slice(-HISTORY_SHOWN).reverse(), list = $('history-list');
+    renderStats(all);
+    list.textContent = '';
+    h.forEach(function (e) {
+      var li = document.createElement('li');
+      var when = document.createElement('span'); when.className = 'when'; when.textContent = dateFmt.format(new Date(e.d));
+      var meta = document.createElement('span'); meta.className = 'meta';
+      meta.textContent = Math.floor(e.s / 60) + ':' + String(e.s % 60).padStart(2, '0') + ' · ' +
+        t('cycles', { n: e.c }) + ' · ' + entryLabel(e);
+      li.append(when, meta); list.appendChild(li);
+    });
+    $('history-empty').hidden = h.length > 0;
+    $('clear-history').hidden = h.length === 0;
+  }
+  $('clear-history').onclick = function () {
+    if (!confirm(t('confirmClear'))) return;
+    try { localStorage.removeItem(HISTORY_KEY); } catch (e) {}
+    renderHistory();
+    say('cleared');
+  };
+  renderHistory();
+  on('lang', function () { makeDateFormats(); renderHistory(); });
+
+  // ---------- Rappels ----------
+  // Sans serveur, pas de notification fiable : le rappel est un fichier agenda (.ics) quotidien.
+  var REM_KEY = 'respiration-reminder', REM_DEF = '08:00';
+  function pad2(n) { return (n < 10 ? '0' : '') + n; }
+  function validTime(s) { return typeof s === 'string' && /^([01]\d|2[0-3]):[0-5]\d$/.test(s); }
+  function loadReminder() {
+    try { var s = localStorage.getItem(REM_KEY); if (validTime(s)) return s; } catch (e) {}
+    return REM_DEF;
+  }
+  function saveReminder(v) { try { localStorage.setItem(REM_KEY, v); } catch (e) {} }
+  // Premier créneau à venir pour « hh:mm » : aujourd'hui s'il est strictement postérieur à now,
+  // sinon demain. Renvoie la date locale flottante « YYYYMMDDTHHMM00 ».
+  function reminderStart(now, hhmm) {
+    var h = +hhmm.slice(0, 2), m = +hhmm.slice(3, 5);
+    var y = now.getFullYear(), mo = now.getMonth(), d = now.getDate();
+    var t = new Date(y, mo, d, h, m, 0);
+    if (t.getTime() <= now.getTime()) t = new Date(y, mo, d + 1, h, m, 0);
+    return t.getFullYear() + pad2(t.getMonth() + 1) + pad2(t.getDate()) + 'T' + hhmm.slice(0, 2) + hhmm.slice(3, 5) + '00';
+  }
+  function icsText(s) { return String(s).replace(/\\/g, '\\\\').replace(/;/g, '\\;').replace(/,/g, '\\,').replace(/\r?\n/g, '\\n'); }
+  // Lignes de 75 caractères au plus : la suite est repliée (CRLF + espace), comme l'exige la RFC 5545.
+  function icsFold(line) {
+    var out = line.slice(0, 70);
+    for (var i = 70; i < line.length; i += 69) out += '\r\n ' + line.slice(i, i + 69);
+    return out;
+  }
+  function buildIcs(now, hhmm) {
+    var stamp = now.toISOString().replace(/[-:]/g, '').replace(/\.\d+/, '');
+    var url = location.href.split('#')[0];
+    return [
+      'BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Respirer//' + lang.toUpperCase(), 'CALSCALE:GREGORIAN',
+      'BEGIN:VEVENT',
+      'UID:' + now.getTime() + '@respirer',
+      'DTSTAMP:' + stamp,
+      'DTSTART:' + reminderStart(now, hhmm),
+      'DURATION:PT10M',
+      'RRULE:FREQ=DAILY',
+      'SUMMARY:' + icsText(t('appTitle')),
+      'DESCRIPTION:' + icsText(t('icsDesc')),
+      'URL:' + url,
+      'BEGIN:VALARM', 'ACTION:DISPLAY', 'DESCRIPTION:' + icsText(t('appTitle')), 'TRIGGER:PT0M', 'END:VALARM',
+      'END:VEVENT', 'END:VCALENDAR'
+    ].map(icsFold).join('\r\n') + '\r\n';
+  }
+  var remInput = $('remtime');
+  remInput.value = loadReminder();
+  remInput.addEventListener('input', function () { if (validTime(remInput.value)) saveReminder(remInput.value); });
+  $('remadd').onclick = function () {
+    var hhmm = validTime(remInput.value) ? remInput.value : loadReminder();
+    var blob = new Blob([buildIcs(new Date(), hhmm)], { type: 'text/calendar;charset=utf-8' });
+    var href = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = href; a.download = t('icsFile');
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(href);
+    say('remDone');
+  };
 
   renderSettings();
 

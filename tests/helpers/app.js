@@ -26,6 +26,7 @@ class App {
     this.disc = page.locator('#disc');
     this.arc = page.locator('#arc');
     this.dot = page.locator('#dot');
+    this.step = page.locator('#gstep'); // étape en cours du mode guidé
   }
 
   /**
@@ -37,6 +38,9 @@ class App {
    * opts.wakeLock     : 'ok' | 'reject' | 'absent'
    * opts.noSleep      : 'ok' | 'absent' (script CDN indisponible)
    * opts.clock        : false pour désactiver l'horloge simulée
+   * opts.share        : navigator.share — 'absent' (défaut) | 'ok' | 'abort' (AbortError) | 'error' (NotAllowedError)
+   * opts.clipboard    : navigator.clipboard.writeText — 'ok' (défaut) | 'reject' | 'absent'
+   * opts.hash         : fragment ajouté à l'URL, ex. '#r=4,0,6,0,5'
    */
   async open(opts) {
     opts = opts || {};
@@ -54,7 +58,7 @@ class App {
       await page.clock.install({ time: 0 });
       await page.clock.pauseAt(1000);
     }
-    await page.goto('/index.html');
+    await page.goto('/index.html' + (opts.hash || ''));
     return this;
   }
 
@@ -95,6 +99,8 @@ class App {
     for (let i = 0; i < (times || 1); i++) await (sign === '+' ? s.plus : s.minus).click();
   }
   preset(name) { return this.page.getByRole('button', { name: name, exact: true }); }
+  /** Bouton d'une séquence du mode guidé : 'Détente' | 'Endormissement' | 'Concentration'. */
+  guide(name) { return this.page.locator('.seq', { hasText: name }); }
 
   async dataPhase() { return this.page.evaluate(() => document.body.getAttribute('data-phase')); }
   /** Échelle (0.5 → 1) du disque central. */
@@ -123,6 +129,8 @@ class App {
     return evs.filter((e) => Object.keys(filter || {}).every((k) => e[k] === filter[k]));
   }
   wakeLock() { return this.page.evaluate(() => window.__wakeLock); }
+  /** Partages (navigator.share) et copies (presse-papiers) enregistrés : { shares, copies }. */
+  shareState() { return this.page.evaluate(() => window.__share); }
   noSleep() { return this.page.evaluate(() => window.__noSleep || null); }
 }
 
@@ -130,4 +138,4 @@ const test = base.test.extend({
   app: async ({ page }, use) => { await use(new App(page)); }
 });
 
-module.exports = { test, expect };
+module.exports = { test, expect, App };

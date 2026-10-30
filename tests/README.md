@@ -21,13 +21,19 @@ npm run test:mutation             # vérifie que la suite détecte les régressi
 |---|---|
 | `affichage-initial.spec.js` | Écran d'accueil : titre, état « Prêt », valeurs par défaut |
 | `reglages.spec.js` | Boutons − / +, pas, bornes, format `4,5 s`, « Illimitée », **persistance** (localStorage, corrompu, interdit) |
+| `partage.spec.js` | Lien de partage des réglages : construction, import, validation, replis share / presse-papiers |
 | `prereglages.spec.js` | 4 – 6, 5 – 5, 4 – 7 – 8, Carrée 4 : valeurs, sélection, interactions avec les réglages |
 | `cycle-respiratoire.spec.js` | Phases, compte à rebours, cycles, animation (disque, arc, point), temps écoulé, arrêt, rattrapage après gel de l'affichage |
-| `duree-seance.spec.js` | Fin automatique « Terminé », mode illimité, relance |
+| `duree-seance.spec.js` | Fin automatique « Terminé » (cycles comptés jusqu'à la fin, même affichage gelé), mode illimité, relance |
 | `reglages-en-cours.spec.js` | Modifier durées / préréglage pendant que la séance tourne (dont l'ajout / le retrait d'une pause située avant la phase en cours) |
+| `mode-guide.spec.js` | Séquences guidées : choix mémorisé, changement de rythme en fin de cycle (dont pile sur la limite), fin au total de la séquence, son programmé aux mêmes instants (reprogrammation, écran éteint), sortie par préréglage ou réglage, accessibilité |
 | `guide-sonore.spec.js` | Web Audio : notes 220 → 440 Hz, volumes, pauses, programmation à l'avance, interrupteur, repli `webkitAudioContext` |
 | `ecran-allume.spec.js` | Wake Lock, repli NoSleep.js, reprise à la visibilité |
 | `theme-accessibilite.spec.js` | Thème clair/sombre, couleurs de phase, ARIA (libellés des boutons, interrupteur), clavier, cibles tactiles, responsive |
+| `rappels.spec.js` | Rappel quotidien : fichier `.ics` téléchargé (champs, CRLF, repliement), premier créneau aujourd'hui / demain (horloge simulée), mémorisation de l'heure (valeur invalide, stockage interdit), accessibilité |
+| `historique.spec.js` | Historique : enregistrement (≥ 30 s, fin automatique), persistance, limite de 500, stockage corrompu / interdit, liste des 10 dernières, effacement confirmé ou annulé |
+| `statistiques.spec.js` | Statistiques : totaux, 7 derniers jours, série (aujourd'hui / hier / trou / même jour), 14 barres et hauteurs, `aria-label`, état vide, mise à jour (séance, effacement, minuit), limites de jour et changement d'heure (Europe/Paris) |
+| `internationalisation.spec.js` | Français / anglais : détection (`fr-FR`, `fr-CA`, `en-US`, `de-DE`), préférence enregistrée (prioritaire, persistante, invalide, stockage interdit), interface anglaise complète (ARIA, phases, « Done »), changement en cours de séance, séparateur décimal, dates (`Intl`), pluriels, `.ics`, messages, 320 px, parité des dictionnaires |
 | `pwa-manifest.spec.js` | `manifest.json`, icônes (dimensions réelles), métadonnées de `index.html` |
 | `pwa-service-worker.spec.js` | Logique de `sw.js` (install / activate / fetch) en isolation |
 | `pwa-hors-ligne.spec.js` | Vrai service worker : rechargement et utilisation sans réseau |
@@ -67,10 +73,13 @@ Après l'ajout d'une fonctionnalité, ajoutez quelques mutants qui la cassent et
   `AudioContext` (journalise chaque note et chaque volume programmés), `navigator.wakeLock`, et
   NoSleep.js (le CDN est remplacé par un faux, donc les tests n'ont pas besoin de réseau).
 - **Fixture `app`** (`helpers/app.js`) : `app.open(options)`, `app.start()`, `app.advance(s)`,
-  `app.setting('inh').plus`, `app.preset('Carrée 4')`, `app.audioEvents(...)`, etc.
+  `app.setting('inh').plus`, `app.preset('Carrée 4')`, `app.guide('Détente')`, `app.step` (étape du mode guidé),
+  `app.audioEvents(...)`, etc.
   Options d'`open` : `storage`, `storageBroken`, `audio` (`standard` | `webkit` | `none`),
   `audioState`, `wakeLock` (`ok` | `reject` | `absent`), `noSleep`.
 - Le serveur statique (`helpers/server.js`) est lancé automatiquement par Playwright.
+- **Langue** : `playwright.config.js` fixe `locale: 'fr-FR'`, car les tests décrivent l'interface française
+  (la langue est détectée via `navigator.language`). Pour l'anglais : `test.use({ locale: 'en-US' })`.
 
 ## Ajouter une fonctionnalité
 

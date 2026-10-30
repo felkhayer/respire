@@ -116,6 +116,63 @@ osc.frequency.exponentialRampToValueAtTime(targetFrequency, ctx.currentTime + du
 
 **Résultat** : Le guidage sonore continue **même écran éteint**, tant que le navigateur n'est pas complètement fermé.
 
+### 4. Mode guidé (séquences prédéfinies)
+
+Une séquence enchaîne plusieurs rythmes, chacun pendant une durée donnée :
+
+| Séquence | Étapes | Total |
+|---|---|---|
+| Détente | 4 – 4 (1 min) → 4 – 6 (2 min) → 4 – 8 (3 min) | 6 min |
+| Endormissement | 4 – 6 (2 min) → 4 – 7 – 8 (8 min) | 10 min |
+| Concentration | 5 – 5 (2 min) → Carrée 4 (6 min) → 5 – 5 (2 min) | 10 min |
+
+**Difficulté** : l'affichage (`frame()`, gelé écran éteint puis rattrapé d'un coup) et le son
+(`schedule()`, programmé jusqu'à 30 min à l'avance) doivent changer de rythme exactement aux mêmes instants.
+
+**Solution** :
+- `stepAt(séquence, t)` est une **fonction pure** : l'étape d'un cycle qui commence `t` secondes après le
+  début de la séance est la première dont la limite n'est pas atteinte (tolérance d'1 ms). Le rythme change
+  donc à la fin du premier cycle qui atteint ou dépasse la limite, jamais au milieu d'une phase.
+- `cycleList(début du cycle)` donne les phases d'un cycle (rythme de l'étape, sinon les réglages) ;
+  `phases(r)` accepte désormais un rythme.
+- `catchUp(now)` calcule, **sans rien modifier**, la position de la séance à l'instant `now` (phase, début de
+  phase et de cycle, cycles). `frame()` l'enregistre ; `schedule()` s'en sert puis cumule les débuts de phase
+  avec la même arithmétique (`+= durée * 1000`) : mêmes calculs, mêmes instants, même après un saut d'horloge.
+- La séquence choisie est mémorisée dans `cfg.guide` (clé absente hors mode guidé : la config par défaut est
+  inchangée). En mode guidé, les réglages affichent le rythme en vigueur et la durée de la séquence
+  (`cfg.total`), ce qui fait tomber la fin de séance au total de la séquence sans autre changement.
+- Choisir un préréglage, toucher un bouton − / + ou appuyer à nouveau sur la séquence quitte le mode guidé
+  (`leaveGuide()`), en repartant du rythme en cours. Choisie pendant une séance, une séquence s'applique
+  selon le temps déjà écoulé.
+- L'étape en cours (« Étape 2 / 3 · 4 – 6 ») s'affiche sous les statistiques (`aria-live="polite"`).
+
+### 5. Internationalisation (français / anglais)
+
+- **Dictionnaires** `I18N.fr` et `I18N.en` (mêmes clés) dans `index.html`, et `t(clé, paramètres)` :
+  `{nom}` est remplacé par le paramètre du même nom ; une valeur tableau `[singulier, pluriel]` est un pluriel
+  choisi par `PLURAL[lang](n)` (français : 0 et 1 au singulier, « 0 jour » ; anglais : seul 1 au singulier,
+  « 0 days »). Le français est la langue de référence : ses textes sont ceux d'avant, à l'identique.
+- **Langue** : préférence enregistrée, sinon `navigator.language` (`fr`, `fr-*` → français, tout le reste →
+  anglais). Elle est mémorisée dans une **clé dédiée `respiration-lang`** plutôt que dans `cfg` : la config des
+  réglages (`DEF`, `respiration-cfg`) et le lien de partage `#r=…` sont des formats de données indépendants de
+  la langue, et une préférence d'affichage n'a pas à voyager avec un lien de réglages. Une valeur inconnue est
+  ignorée ; un stockage interdit laisse la détection s'appliquer.
+- **Changement immédiat** : le sélecteur FR / EN (boutons `aria-pressed` du panneau de réglages) appelle
+  `setLang()`, qui retraduit les éléments `data-i18n`, `<html lang>` et `document.title`, puis émet
+  `emit('lang')`. Chaque partie s'y abonne : libellés et `aria-label` des réglages, préréglages, bouton
+  principal et phase (y compris en pleine séance, sans attendre l'image suivante), séquences et étape guidée,
+  historique et statistiques (formats de date recréés), dernier message `say()`.
+- `say(clé, paramètres)` prend désormais une clé du dictionnaire (et non plus un texte).
+- **Formats** : `num()` applique le séparateur décimal (`4,5 s` / `4.5 s`, rythme `4,5 – 6` / `4.5 – 6`) ; les
+  dates utilisent `Intl.DateTimeFormat` avec la locale du navigateur si elle est de la langue choisie (`en-GB`
+  → « 20 Oct »), sinon la langue elle-même. Le fichier `.ics` est traduit (`SUMMARY`, `DESCRIPTION`,
+  `PRODID:-//Respirer//EN`) et son nom aussi (`respirer-rappel.ics` / `breathing-reminder.ics`), puisqu'il est
+  vu par l'utilisateur.
+- **Inchangés** : le format du lien `#r=…` (point décimal), les clés et le contenu du stockage.
+- **Limite** : `manifest.json` reste en français (nom de l'application installée, description). Un manifeste
+  par langue imposerait de servir un fichier différent selon la langue, sans gain réel ici ; une fois la PWA
+  installée, son nom sur l'écran d'accueil reste « Respirer » / « Respiration lente ».
+
 ---
 
 ## 🎨 Interface Utilisateur
@@ -196,6 +253,8 @@ osc.frequency.exponentialRampToValueAtTime(targetFrequency, ctx.currentTime + du
 | Respect vie privée | Pas de tracking, localStorage seulement | ✅ Implémenté |
 | Accessible | ARIA, clavier, thèmes | ✅ Implémenté |
 | Multi-appareils | Design responsive | ✅ Implémenté |
+| Séquences guidées, son fidèle écran éteint | Fonction pure `stepAt()` partagée par l'affichage et le son | ✅ Implémenté |
+| Français / anglais sans rechargement | Dictionnaires + `t()`, événement `lang` | ✅ Implémenté |
 
 ---
 
@@ -229,12 +288,24 @@ et de NoSleep.js. Voir [tests/README.md](../tests/README.md).
 
 ## 🔮 Améliorations Possibles
 
-1. **Internationalisation** : Traduire en anglais et autres langues
-2. **Historique** : Sauvegarder l'historique des séances
-3. **Statistiques** : Graphiques de progression sur le long terme
-4. **Partage** : Permettre de partager ses configurations
-5. **Notifications** : Rappels pour pratiquer régulièrement
-6. **Mode guidé** : Séquences prédéfinies (méditation, endormissement, etc.)
+1. ✅ **Internationalisation** : français et anglais, détection de la langue, sélecteur FR / EN appliqué sans rechargement, dates et nombres localisés, voir § 5 (`manifest.json` reste en français)
+2. ✅ **Historique** : clé `respiration-history` (500 séances au plus, d'au moins 30 s), 10 dernières séances dans un `<details>`, effacement confirmé
+3. ✅ **Statistiques** : séances, minutes, série de jours, 7 derniers jours et graphique SVG de 14 jours, jours calculés en heure locale (sans erreur aux changements d'heure)
+4. ✅ **Partage** : lien `#r=inh,hold1,exh,hold2,total` partagé par `navigator.share` ou copié, validé et borné à l'ouverture
+5. ✅ **Rappels** : rappel quotidien par fichier agenda `.ics` (voir ci-dessous)
+6. ✅ **Mode guidé** : séquences prédéfinies (Détente, Endormissement, Concentration), voir § 4
+
+### Rappels : un fichier agenda plutôt que des notifications
+
+Sans serveur, une notification programmée n'est pas fiable sur le web : Push exige un serveur, les
+Notification Triggers ont été abandonnés et Periodic Background Sync est limité à Chrome installé, sans
+heure précise. Le rappel est donc **confié à l'agenda de l'utilisateur** : la section « Rappel quotidien »
+mémorise une heure (clé `localStorage` `respiration-reminder`, `08:00` par défaut) et le bouton
+« Ajouter à mon agenda » télécharge `respirer-rappel.ics` (RFC 5545, lignes CRLF, repliées à 75 caractères) :
+un `VEVENT` quotidien (`RRULE:FREQ=DAILY`) en heure locale flottante, première occurrence aujourd'hui si
+l'heure est à venir, sinon demain, avec une `VALARM` à l'heure de l'événement. Cela fonctionne hors ligne,
+sur tous les systèmes, et aucune donnée ne quitte l'appareil. Limite : l'événement n'est créé que si
+l'utilisateur ouvre le fichier, et sa suppression ou modification se fait ensuite dans l'agenda.
 
 ---
 

@@ -19,6 +19,38 @@ test.describe('Durée de la séance', () => {
     await expect(app.dot).toHaveAttribute('opacity', '0');
   });
 
+  test('le cycle qui se termine pile à la fin est compté', async ({ app }) => {
+    await app.open(UNE_MINUTE); // 4 – 6 : 6 cycles de 10 s en 1 min
+    await app.start();
+    await app.advance(59.5);
+    await expect(app.cycles).toHaveText('5');
+    await app.advance(1);
+    await expect(app.phase).toHaveText('Terminé');
+    await expect(app.cycles).toHaveText('6');
+  });
+
+  test('les cycles sont comptés jusqu’à la fin même si l’affichage était gelé', async ({ app, page }) => {
+    await app.open(UNE_MINUTE);
+    await app.start();
+    await app.advance(15.5);
+    await expect(app.cycles).toHaveText('1');
+    // Écran éteint : aucune image entre 15,5 s et 90 s, puis la page se réveille après la fin.
+    await page.clock.fastForward(74500);
+    await app.advance(0.5);
+    await expect(app.phase).toHaveText('Terminé');
+    await expect(app.cycles).toHaveText('6');
+  });
+
+  test('en mode guidé, les cycles de toutes les étapes sont comptés à la fin', async ({ app }) => {
+    await app.open();
+    await app.guide('Détente').click(); // 4 – 4 (1 min) → 4 – 6 (2 min) → 4 – 8 (3 min)
+    await app.start();
+    await app.advance(361);
+    await expect(app.phase).toHaveText('Terminé');
+    // Étapes : 8 cycles de 8 s (64 s), 12 de 10 s (jusqu'à 184 s), puis 4 – 8 : 176 s / 12 s = 14 cycles complets.
+    await expect(app.cycles).toHaveText('34');
+  });
+
   test('la fin de séance libère l’écran et arrête le son', async ({ app }) => {
     await app.open(UNE_MINUTE);
     await app.start();

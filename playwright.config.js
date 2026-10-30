@@ -14,6 +14,9 @@ module.exports = defineConfig({
     // Le service worker est testé à part (tests/pwa-hors-ligne.spec.js) : ailleurs il
     // empêcherait d'intercepter le CDN NoSleep.
     serviceWorkers: 'block',
+    // Les tests décrivent l'interface française (langue détectée via navigator.language) ;
+    // tests/internationalisation.spec.js change de locale pour vérifier l'anglais.
+    locale: 'fr-FR',
     trace: 'retain-on-failure'
   },
   projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
