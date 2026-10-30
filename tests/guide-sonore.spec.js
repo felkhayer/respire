@@ -60,7 +60,12 @@ test.describe('Guide sonore', () => {
       await app.open();
       await app.preset('4 – 7 – 8').click();
       await app.start();
-      const freqs = (await app.audioEvents({ param: 'frequency', method: 'setValueAtTime' })).map((e) => e.args[0]);
+      await app.advance(9); // en pleine rétention : reprogrammation en cours de cycle
+      await app.click('exh', '+');
+      // Paliers ET cibles des rampes : toutes les notes jouées restent dans l'octave.
+      const freqs = (await app.audioEvents({ param: 'frequency' }))
+        .filter((e) => e.method !== 'cancelScheduledValues').map((e) => e.args[0]);
+      expect(freqs.length).toBeGreaterThan(10);
       for (const f of freqs) { expect(f).toBeGreaterThanOrEqual(220 - 1e-9); expect(f).toBeLessThanOrEqual(440 + 1e-9); }
     });
 
@@ -121,6 +126,19 @@ test.describe('Guide sonore', () => {
       expect(osc.stopCalls).toContain(60.6);
     });
 
+    test('reprogrammer le son en cours de séance garde la fin à l’heure prévue', async ({ app }) => {
+      await app.open({ storage: { [CLE]: JSON.stringify({ total: 1 }) } });
+      await app.start();
+      await app.advance(30);
+      await app.click('exh', '+'); // reprogramme le son à t = 30 s
+      const gains = await app.audioEvents({ node: 'gain0', param: 'gain' });
+      const derniere = gains.slice(gains.map((e) => e.method).lastIndexOf('cancelScheduledValues') + 1);
+      const fade = derniere.find((e) => e.method === 'setTargetAtTime' && e.args[0] === 0);
+      expect(fade.args[1]).toBeCloseTo(60, 1); // et non 30 + 60 = 90 s
+      const [osc] = (await app.audio()).oscillators;
+      expect(osc.stopCalls[osc.stopCalls.length - 1]).toBeCloseTo(60.6, 1);
+    });
+
     test('pas d’arrêt programmé en mode illimité', async ({ app }) => {
       await app.open({ storage: { [CLE]: JSON.stringify({ total: 0 }) } });
       await app.start();
@@ -134,8 +152,9 @@ test.describe('Guide sonore', () => {
       await app.advance(2);
       await app.stop();
       const [osc] = (await app.audio()).oscillators;
-      expect(osc.stopCalls).toContain(2.5); // en plus de l'arrêt programmé à 300,6 s
-      const coupures = (await app.audioEvents(volumes)).filter((e) => e.args[0] === 0 && e.args[1] === 2);
+      // Instants comparés avec tolérance : l'horloge audio est un flottant (2 peut valoir 1,9999999999999998).
+      expect(osc.stopCalls.some((t) => Math.abs(t - 2.5) < 1e-6)).toBe(true); // en plus de l'arrêt programmé à 300,6 s
+      const coupures = (await app.audioEvents(volumes)).filter((e) => e.args[0] === 0 && Math.abs(e.args[1] - 2) < 1e-6);
       expect(coupures).toHaveLength(1);
     });
 

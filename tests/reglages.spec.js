@@ -88,14 +88,6 @@ test.describe('Réglages des durées', () => {
     await expect(app.count).toHaveText('7');
   });
 
-  test('les boutons ont des libellés accessibles explicites', async ({ page }) => {
-    await page.goto('/index.html');
-    for (const l of ['Inspiration', 'Pause poumons pleins', 'Expiration', 'Pause poumons vides', 'Durée de l’exercice']) {
-      await expect(page.getByRole('button', { name: 'Augmenter : ' + l })).toBeVisible();
-      await expect(page.getByRole('button', { name: 'Diminuer : ' + l })).toBeVisible();
-    }
-  });
-
   test.describe('Persistance', () => {
     test('les réglages sont enregistrés dans le stockage local', async ({ app }) => {
       await app.open();

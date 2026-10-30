@@ -11,7 +11,7 @@ module.exports = defineConfig({
   reporter: process.env.CI ? [['list'], ['html', { open: 'never' }]] : 'list',
   use: {
     baseURL: 'http://127.0.0.1:' + PORT,
-    // Le service worker est testé à part (tests/pwa-offline.spec.js) : ailleurs il
+    // Le service worker est testé à part (tests/pwa-hors-ligne.spec.js) : ailleurs il
     // empêcherait d'intercepter le CDN NoSleep.
     serviceWorkers: 'block',
     trace: 'retain-on-failure'

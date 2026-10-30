@@ -30,9 +30,9 @@ test.describe('Mode hors ligne', () => {
     await expect(page.locator('#go')).toHaveText('Arrêter');
   });
 
-  test('le service worker est servi et enregistré avec la portée de l’application', async ({ page }) => {
+  test('le service worker couvre toute l’application (portée = racine du site)', async ({ page, baseURL }) => {
     await page.goto('/index.html');
     const portee = await page.evaluate(async () => (await navigator.serviceWorker.ready).scope);
-    expect(portee).toMatch(/\/$/);
+    expect(portee).toBe(baseURL + '/');
   });
 });

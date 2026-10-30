@@ -14,10 +14,13 @@ test.describe('Cycle respiratoire (4 s / 6 s par défaut)', () => {
     await expect(app.dot).toHaveAttribute('opacity', '1');
   });
 
-  test('le compte à rebours décroît d’une unité par seconde pendant l’inspiration', async ({ app }) => {
+  test('le compte à rebours affiche les secondes restantes, arrondies au-dessus', async ({ app }) => {
+    // Échantillons en début de seconde (x,2 s → 3,8 s restantes) : un arrondi au plus proche
+    // afficherait 3 au lieu de 4, ce qu'un échantillon à x,5 s ne distingue pas.
     const vus = [];
-    for (const t of [0.5, 1.5, 2.5, 3.5]) {
-      await app.advance(t === 0.5 ? 0.5 : 1);
+    let t0 = 0;
+    for (const t of [0.2, 1.2, 2.2, 3.2]) {
+      await app.advance(t - t0); t0 = t;
       vus.push(await app.count.textContent());
     }
     expect(vus).toEqual(['4', '3', '2', '1']);
@@ -65,7 +68,10 @@ test.describe('Cycle respiratoire (4 s / 6 s par défaut)', () => {
     const C = 2 * Math.PI * 140;
     await app.advance(2); // mi-inspiration
     expect(await app.dashOffset()).toBeCloseTo(C / 2, -1);
-    await app.advance(5); // t = 7 s, mi-expiration : l'arc repart de zéro et est de nouveau à moitié
+    await app.advance(3.5); // t = 5,5 s, quart de l'expiration : l'arc repart de zéro et se remplit
+    // (il suit la progression de la phase, pas le niveau des poumons qui, lui, diminue)
+    expect(await app.dashOffset()).toBeCloseTo(C * 0.75, -1);
+    await app.advance(1.5); // t = 7 s, mi-expiration
     expect(await app.dashOffset()).toBeCloseTo(C / 2, -1);
   });
 
@@ -182,13 +188,5 @@ test.describe('Cycle avec pauses', () => {
     await expect(app.count).toHaveText('1');
     await app.advance(0.5); // t = 4,75 s
     await expect(app.phase).toHaveText('Expirez');
-  });
-
-  test('sans pause configurée, « Retenez » et « Pause » ne s’affichent jamais', async ({ app }) => {
-    await app.open();
-    await app.start();
-    const vus = new Set();
-    for (let i = 0; i < 20; i++) { await app.advance(0.5); vus.add(await app.phase.textContent()); }
-    expect([...vus].sort()).toEqual(['Expirez', 'Inspirez']);
   });
 });

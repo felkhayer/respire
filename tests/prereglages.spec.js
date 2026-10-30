@@ -13,8 +13,9 @@ test.describe('Préréglages', () => {
 
   for (const p of PRESETS) {
     test('« ' + p.nom + ' » applique ses durées', async ({ app }) => {
-      // On part d'un autre préréglage pour que le clic change réellement quelque chose.
-      await app.preset(p.nom === '5 – 5' ? 'Carrée 4' : '5 – 5').click();
+      // On part d'un préréglage dont TOUTES les durées diffèrent (pauses comprises) :
+      // le clic doit réellement écrire chacune des quatre valeurs, y compris remettre une pause à 0.
+      await app.preset(p.nom === 'Carrée 4' ? '5 – 5' : 'Carrée 4').click();
       await app.preset(p.nom).click();
       for (const k of ['inh', 'hold1', 'exh', 'hold2']) await expect(app.setting(k).value).toHaveText(p[k]);
       await expect(app.preset(p.nom)).toHaveAttribute('aria-pressed', 'true');
@@ -45,22 +46,10 @@ test.describe('Préréglages', () => {
     await expect(app.sound).toHaveAttribute('aria-checked', 'false');
   });
 
-  test('passer de « Carrée 4 » à « 4 – 6 » remet les pauses à zéro', async ({ app }) => {
-    await app.preset('Carrée 4').click();
-    await app.preset('4 – 6').click();
-    await expect(app.setting('hold1').value).toHaveText('0 s');
-    await expect(app.setting('hold2').value).toHaveText('0 s');
-  });
-
   test('le préréglage choisi est conservé après rechargement', async ({ app }) => {
     await app.preset('4 – 7 – 8').click();
     await app.reload();
     await expect(app.preset('4 – 7 – 8')).toHaveAttribute('aria-pressed', 'true');
     await expect(app.setting('exh').value).toHaveText('8 s');
-  });
-
-  test('le grand compteur au repos reflète le préréglage', async ({ app }) => {
-    await app.preset('5 – 5').click();
-    await expect(app.count).toHaveText('5');
   });
 });

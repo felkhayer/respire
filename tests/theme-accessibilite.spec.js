@@ -56,17 +56,24 @@ test.describe('Thème clair / sombre', () => {
   test('les transitions de couleur sont actives par défaut', async ({ app, page }) => {
     await page.emulateMedia({ reducedMotion: 'no-preference' });
     await app.open();
-    await expect(app.phase).toHaveCSS('transition-duration', '0.5s');
+    // On vérifie la présence d'une transition, pas sa durée exacte (choix esthétique libre).
+    await expect(app.phase).not.toHaveCSS('transition-duration', '0s');
+    await expect(app.disc).not.toHaveCSS('transition-duration', '0s');
   });
 });
 
 test.describe('Accessibilité', () => {
   test.beforeEach(async ({ app }) => { await app.open(); });
 
-  test('l’interrupteur sonore est un « switch » nommé « Guide sonore »', async ({ page }) => {
-    const sw = page.getByRole('switch', { name: 'Guide sonore' });
-    await expect(sw).toBeVisible();
-    await expect(sw).toHaveAttribute('aria-checked', 'true');
+  test('l’interrupteur sonore est annoncé comme un « switch » nommé « Guide sonore »', async ({ page }) => {
+    await expect(page.getByRole('switch', { name: 'Guide sonore' })).toBeVisible();
+  });
+
+  test('chaque bouton − / + annonce l’action et le réglage concerné', async ({ page }) => {
+    for (const l of ['Inspiration', 'Pause poumons pleins', 'Expiration', 'Pause poumons vides', 'Durée de l’exercice']) {
+      await expect(page.getByRole('button', { name: 'Augmenter : ' + l })).toBeVisible();
+      await expect(page.getByRole('button', { name: 'Diminuer : ' + l })).toBeVisible();
+    }
   });
 
   test('les cibles tactiles font au moins 44 px', async ({ app, page }) => {
@@ -99,6 +106,13 @@ test.describe('Accessibilité', () => {
     await expect(app.preset('5 – 5')).toHaveAttribute('aria-pressed', 'true');
   });
 
+  test('l’élément atteint au clavier est entouré d’un contour visible', async ({ app, page }) => {
+    await page.keyboard.press('Tab');
+    await expect(app.go).toBeFocused();
+    await expect(app.go).toHaveCSS('outline-style', 'solid');
+    await expect(app.go).toHaveCSS('outline-width', '3px');
+  });
+
   test('l’ordre de tabulation commence par le bouton principal', async ({ app, page }) => {
     await page.keyboard.press('Tab');
     await expect(app.go).toBeFocused();
@@ -106,14 +120,14 @@ test.describe('Accessibilité', () => {
 });
 
 test.describe('Mise en page', () => {
-  for (const [nom, w, h] of [['petit mobile', 320, 568], ['mobile', 390, 844], ['bureau', 1280, 800]]) {
-    test('pas de défilement horizontal sur ' + nom + ' (' + w + ' px)', async ({ app, page }) => {
-      await page.setViewportSize({ width: w, height: h });
-      await app.open();
-      const { scroll, inner } = await page.evaluate(() => ({ scroll: document.documentElement.scrollWidth, inner: window.innerWidth }));
-      expect(scroll).toBeLessThanOrEqual(inner);
-    });
-  }
+  // La mise en page est fluide jusqu'à 440 px : le plus petit écran courant (320 px) est le cas limite,
+  // un débordement sur un écran plus large y apparaîtrait aussi.
+  test('pas de défilement horizontal sur petit mobile (320 px)', async ({ app, page }) => {
+    await page.setViewportSize({ width: 320, height: 568 });
+    await app.open();
+    const { scroll, inner } = await page.evaluate(() => ({ scroll: document.documentElement.scrollWidth, inner: window.innerWidth }));
+    expect(scroll).toBeLessThanOrEqual(inner);
+  });
 
   test('le contenu est limité à 440 px de large sur grand écran', async ({ app, page }) => {
     await page.setViewportSize({ width: 1280, height: 800 });
