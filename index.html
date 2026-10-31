@@ -525,7 +525,7 @@ body[data-phase="h1"] .disc, body[data-phase="h2"] .disc { background: var(--hol
   // ---------- Son ----------
   // Les variations de note sont programmées à l'avance sur l'horloge audio :
   // elles continuent donc même quand l'écran est en veille et que l'affichage est gelé.
-  var ctx = null, osc = null, gain = null, refillTimer = null;
+  var ctx = null, osc = null, gain = null, refillTimer = null, syncTimer = null, syncTries = 0;
   var F0 = 220; // La3 → La4 : une octave
   function initAudio() {
     var AC = window.AudioContext || window.webkitAudioContext;
@@ -546,11 +546,31 @@ body[data-phase="h1"] .disc, body[data-phase="h2"] .disc { background: var(--hol
       o.stop(ctx.currentTime + 0.5);
     } catch (e) {}
   }
+  // Instant (ms, horloge de la page) où sera entendu ce que l'horloge audio joue à `audioT`.
+  // L'horloge audio ne démarre qu'après la création du contexte (currentTime reste à 0 un moment,
+  // parfois plusieurs centaines de ms sur mobile) et le son sort avec un retard (tampon, Bluetooth…).
+  // getOutputTimestamp() relie les deux horloges en tenant compte de tout cela. Tant qu'il ne donne
+  // pas encore de valeur (horloge audio pas lancée), on recale par approximation et on reprogramme
+  // un peu plus tard : sans cela, le son garde son retard jusqu'à la reprogrammation des 5 minutes.
+  function heardAt(audioT) {
+    var perfNow = performance.now();
+    var ts = ctx.getOutputTimestamp ? ctx.getOutputTimestamp() : null;
+    if (ts && ts.contextTime > 0 && ts.performanceTime > 0) {
+      syncTries = 0;
+      return ts.performanceTime + (audioT - ts.contextTime) * 1000;
+    }
+    if (ts && syncTries < 20) {
+      syncTries++;
+      clearTimeout(syncTimer);
+      syncTimer = setTimeout(function () { if (running) schedule(); }, 250);
+    }
+    return perfNow + ((ctx.baseLatency || 0) + (ctx.outputLatency || 0)) * 1000;
+  }
   function schedule() {
     if (!running || !cfg.sound) return;
     initAudio();
     if (!osc) return;
-    var now = ctx.currentTime, perfNow = performance.now();
+    var now = ctx.currentTime, perfNow = heardAt(now);
     // Recalage commun avec frame() : la position est juste même si l'affichage était gelé.
     var pos = catchUp(perfNow);
     var list = pos.list, i = pos.idx;
@@ -673,7 +693,7 @@ body[data-phase="h1"] .disc, body[data-phase="h2"] .disc { background: var(--hol
 
   function start() {
     if (cfg.sound) initAudio();
-    running = true; hasRun = true; cur = 'in'; cycles = 0;
+    running = true; hasRun = true; cur = 'in'; cycles = 0; syncTries = 0;
     cycleStart = phaseStart = startedAt = performance.now();
     $('go').textContent = t('stop');
     getLock();
@@ -686,7 +706,7 @@ body[data-phase="h1"] .disc, body[data-phase="h2"] .disc { background: var(--hol
   function stop(done) {
     var endedAt = performance.now();
     running = false;
-    clearInterval(refillTimer);
+    clearInterval(refillTimer); clearTimeout(syncTimer); syncTries = 0;
     stopAudio(); releaseLock();
     $('go').textContent = t('start');
     idle = done === true ? 'done' : 'ready';

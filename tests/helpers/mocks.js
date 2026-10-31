@@ -42,7 +42,18 @@ function installMocks(opts) {
     this._t0 = now();
     log.contexts.push(this);
   }
-  Object.defineProperty(FakeAudioContext.prototype, 'currentTime', { get: function () { return now() - this._t0; } });
+  // opts.audioClock = { startDelay, latency } (s) : horloge audio qui ne démarre qu'après startDelay et son
+  // entendu latency plus tard, avec getOutputTimestamp() comme un vrai navigateur. Absent : horloge idéale.
+  var clk = opts.audioClock;
+  Object.defineProperty(FakeAudioContext.prototype, 'currentTime', {
+    get: function () { return clk ? Math.max(0, now() - this._t0 - clk.startDelay) : now() - this._t0; }
+  });
+  if (clk) {
+    FakeAudioContext.prototype.getOutputTimestamp = function () {
+      var heard = now() - this._t0 - clk.startDelay - clk.latency;
+      return heard > 0 ? { contextTime: heard, performanceTime: performance.now() } : { contextTime: 0, performanceTime: 0 };
+    };
+  }
   FakeAudioContext.prototype.resume = function () { this.resumeCalls++; this.state = 'running'; return Promise.resolve(); };
   FakeAudioContext.prototype.createOscillator = function () {
     var o = { id: 'osc' + log.oscillators.length, ctx: this, type: 'sine', started: false, stopCalls: [] };
