@@ -116,6 +116,30 @@ test.describe('Guide sonore', () => {
     });
   });
 
+  test.describe('Synchronisation avec l’affichage', () => {
+    test('le démarrage tardif de l’horloge audio et la latence de sortie sont rattrapés', async ({ app }) => {
+      // Horloge audio lancée 0,4 s après la création du contexte, son entendu 0,2 s plus tard.
+      await app.open({ audioClock: { startDelay: 0.4, latency: 0.2 } });
+      await app.start(); // t = 1 s
+      for (let k = 0; k < 4; k++) await app.advance(0.25); // reprogrammations jusqu'à ce que l'horloge réponde
+      const ev = await app.audioEvents({ param: 'frequency' });
+      const dernier = ev.map((e) => e.method).lastIndexOf('cancelScheduledValues');
+      const r = ev.slice(dernier).filter((e) => e.method === 'exponentialRampToValueAtTime').slice(0, 2).map((e) => e.args);
+      // Fin de l'inspiration affichée à t = 5 s : sur l'horloge audio, 5 − 1 − 0,4 − 0,2 = 3,4 s.
+      expect(r[0][0]).toBe(440); expect(r[0][1]).toBeCloseTo(3.4, 6);
+      expect(r[1][0]).toBe(220); expect(r[1][1]).toBeCloseTo(9.4, 6);
+    });
+
+    test('la reprogrammation s’arrête dès que l’horloge audio est recalée', async ({ app }) => {
+      await app.open({ audioClock: { startDelay: 0.4, latency: 0.2 } });
+      await app.start();
+      for (let k = 0; k < 4; k++) await app.advance(0.25);
+      const n = (await app.audioEvents({ param: 'frequency', method: 'cancelScheduledValues' })).length;
+      await app.advance(10);
+      expect((await app.audioEvents({ param: 'frequency', method: 'cancelScheduledValues' })).length).toBe(n);
+    });
+  });
+
   test.describe('Fin de séance', () => {
     test('l’arrêt programmé est enregistré à l’avance sur l’horloge audio (durée limitée)', async ({ app }) => {
       await app.open({ storage: { [CLE]: JSON.stringify({ total: 1 }) } });
