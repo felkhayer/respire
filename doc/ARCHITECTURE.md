@@ -116,6 +116,12 @@ osc.frequency.exponentialRampToValueAtTime(targetFrequency, ctx.currentTime + du
 
 **Résultat** : Le guidage sonore continue **même écran éteint**, tant que le navigateur n'est pas complètement fermé.
 
+**Synchronisation son / affichage** : l'affichage suit `performance.now()`, le son l'horloge audio
+(`ctx.currentTime`). `heardAt()` relie les deux avec `ctx.getOutputTimestamp()`, qui tient compte du démarrage
+tardif de l'horloge audio (elle reste à 0 un moment après la création du contexte) et de la latence de sortie
+(tampon, Bluetooth). Tant que cette mesure n'est pas disponible, `schedule()` est relancé toutes les 250 ms ;
+sinon le son garderait son retard jusqu'à la reprogrammation des 5 minutes.
+
 ### 4. Mode guidé (séquences prédéfinies)
 
 Une séquence enchaîne plusieurs rythmes, chacun pendant une durée donnée :
