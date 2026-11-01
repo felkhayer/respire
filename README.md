@@ -87,7 +87,7 @@ Les tests s'exécutent aussi automatiquement sur GitHub à chaque push et pull r
 ### Déploiement
 Les modifications poussées sur la branche `main` doivent être fusionnées vers `gh-pages` pour être déployées.
 
-**Avant chaque déploiement, incrémentez `CACHE` dans `sw.js`** (`respiration-v2` → `respiration-v3`…). Le
+**Avant chaque déploiement, incrémentez `CACHE` dans `sw.js`** (`respiration-v3` → `respiration-v4`…). Le
 service worker sert les fichiers depuis son cache : si `sw.js` ne change pas, le navigateur ne voit pas de
 nouvelle version et les utilisateurs qui ont déjà installé l'application gardent l'ancienne.
 
