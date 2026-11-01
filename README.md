@@ -85,7 +85,12 @@ Détails, organisation et mode d'emploi pour ajouter une fonctionnalité : [test
 Les tests s'exécutent aussi automatiquement sur GitHub à chaque push et pull request.
 
 ### Déploiement
-Les modifications poussées sur la branche `main` doivent être fusionnées vers `gh-pages` pour être déployées :
+Les modifications poussées sur la branche `main` doivent être fusionnées vers `gh-pages` pour être déployées.
+
+**Avant chaque déploiement, incrémentez `CACHE` dans `sw.js`** (`respiration-v2` → `respiration-v3`…). Le
+service worker sert les fichiers depuis son cache : si `sw.js` ne change pas, le navigateur ne voit pas de
+nouvelle version et les utilisateurs qui ont déjà installé l'application gardent l'ancienne.
+
 ```bash
 git checkout main
 # ... faites vos modifications ...
